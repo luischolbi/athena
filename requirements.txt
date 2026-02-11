@@ -1,0 +1,6 @@
+requests
+beautifulsoup4
+fastapi
+uvicorn
+python-dateutil
+feedparser
