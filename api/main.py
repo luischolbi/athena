@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database.database import get_connection
+from database.database import get_connection, init_db
 from scoring.scorer import get_score_breakdown
 
 app = FastAPI(title="Athena API", version="1.0")
@@ -28,6 +28,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def startup():
+    """Ensure database tables exist on startup."""
+    init_db()
 
 
 # ── Helpers ──
@@ -106,10 +112,8 @@ def _build_company_response(company_row, conn, include_breakdown=True):
 
 @app.get("/")
 def root():
-    conn = get_connection()
-    count = conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0]
-    conn.close()
-    return {"name": "Athena API", "version": "1.0", "companies": count}
+    """Health check — must respond instantly for Render deploy."""
+    return {"status": "ok", "name": "Athena API", "version": "1.0"}
 
 
 @app.get("/api/signals")
