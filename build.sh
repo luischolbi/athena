@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# v2 deploy fix
 set -e
 
 echo "=== Installing dependencies ==="
