@@ -43,6 +43,128 @@ STARTUP_QUERIES = [
     "we're hiring", "building in stealth", "open source",
 ]
 
+# --- Post quality filters ---
+
+# Title prefixes that indicate a discussion or article, not a company launch
+ARTICLE_PREFIXES = (
+    "how ", "why ", "what ", "when ", "where ", "who ",
+    "ask hn", "tell hn",
+    "the ", "a ", "an ", "my ", "we ", "i ",
+    "if ", "is ", "are ", "do ", "does ", "can ",
+    "should ", "could ", "would ", "will ",
+)
+
+# Phrases in titles that indicate editorial/article content
+ARTICLE_PHRASES = [
+    r"\bvs\.?\b", r"\bversus\b", r"\bthe case for\b", r"\ba guide to\b",
+    r"\bintroduction to\b", r"\bin defense of\b", r"\blessons from\b",
+    r"\bhow .+ (work|perform|compare)", r"\bstate of\b",
+    r"\bwhy (i|we|you|they)\b", r"\breview of\b", r"\bopinion:\b",
+    r"\bannouncing\b", r"\bretrospective\b", r"\bpostmortem\b",
+    r"\bopen letter\b", r"\brant\b",
+]
+
+_ARTICLE_PHRASE_RE = re.compile("|".join(ARTICLE_PHRASES), re.IGNORECASE)
+
+# Domains that are media/blog/social — not company product sites
+NON_COMPANY_DOMAINS = {
+    # News & media
+    "nytimes.com", "bbc.com", "bbc.co.uk", "theguardian.com",
+    "reuters.com", "bloomberg.com", "techcrunch.com", "wired.com",
+    "arstechnica.com", "theverge.com", "vice.com", "cnn.com",
+    "forbes.com", "businessinsider.com", "wsj.com", "ft.com",
+    "sifted.eu", "thenextweb.com", "venturebeat.com", "zdnet.com",
+    # Blogs & publishing
+    "medium.com", "substack.com", "wordpress.com", "blogspot.com",
+    "ghost.io", "hashnode.dev", "dev.to", "mirror.xyz",
+    # Social & video
+    "twitter.com", "x.com", "reddit.com", "youtube.com", "youtu.be",
+    "facebook.com", "instagram.com", "tiktok.com", "linkedin.com",
+    # Code hosting (blogs/docs, not product sites)
+    "github.com", "gitlab.com", "gist.github.com",
+    "github.io", "gitbook.io",
+    # Reference & docs
+    "wikipedia.org", "arxiv.org", "doi.org", "nature.com",
+    "sciencedirect.com", "springer.com", "acm.org", "ieee.org",
+    # Misc
+    "news.ycombinator.com", "imgur.com", "archive.org",
+    "google.com", "apple.com", "microsoft.com", "amazon.com",
+}
+
+
+def _is_show_or_launch(title):
+    """Return True if title is a genuine Show HN / Launch HN post."""
+    t = title.strip().lower()
+    return t.startswith("show hn") or t.startswith("launch hn")
+
+
+def _is_article_title(title):
+    """Return True if the title looks like a discussion or article."""
+    t = title.strip().lower()
+    # Strip Show/Launch HN prefix first — those are OK
+    t = re.sub(r'^(show|launch)\s+hn:\s*', '', t)
+    # Check prefixes
+    if any(t.startswith(p) for p in ARTICLE_PREFIXES):
+        return True
+    # Check article phrases
+    if _ARTICLE_PHRASE_RE.search(t):
+        return True
+    # Very long titles (>12 words) are usually articles, not product names
+    if len(t.split()) > 12:
+        return True
+    return False
+
+
+def _is_non_company_domain(url):
+    """Return True if the URL points to a media/blog/social site."""
+    domain = extract_domain(url)
+    if not domain:
+        return False
+    # Check exact match and parent domain (e.g. blog.nytimes.com)
+    if domain in NON_COMPANY_DOMAINS:
+        return True
+    parts = domain.split(".")
+    if len(parts) > 2:
+        parent = ".".join(parts[-2:])
+        if parent in NON_COMPANY_DOMAINS:
+            return True
+    return False
+
+
+def _should_keep_hit(hit):
+    """Master filter: return True if this hit is worth processing.
+
+    Show HN / Launch HN posts pass with a lighter filter.
+    Other posts must survive all filters.
+    """
+    title = hit.get("title", "")
+    url = hit.get("url", "")
+
+    is_launch = _is_show_or_launch(title)
+
+    # Always skip if the URL points to a news/blog domain
+    if _is_non_company_domain(url):
+        return False
+
+    if is_launch:
+        # Show/Launch HN — only skip if title is clearly an article
+        # after stripping the prefix
+        stripped = re.sub(r'^(Show|Launch)\s+HN:\s*', '', title, flags=re.IGNORECASE)
+        # If the stripped part is very long or article-like, skip
+        if len(stripped.split()) > 15:
+            return False
+        return True
+
+    # Non-launch posts: skip anything that reads like an article
+    if _is_article_title(title):
+        return False
+
+    # Must have a URL pointing to a product domain
+    if not url:
+        return False
+
+    return True
+
 # --- Sector detection ---
 
 SECTOR_RULES = [
@@ -453,7 +575,7 @@ def main():
                 all_hits.append(h)
         log(f"      {len(hits)} results ({len(seen_ids)} unique so far)")
 
-    # Startup-signal queries — only keep hits with European geography
+    # Startup-signal queries — only keep hits with European geography AND product signal
     log("\n  Startup queries (European-only filter):")
     startup_total = 0
     startup_kept = 0
@@ -465,6 +587,9 @@ def main():
             oid = h.get("objectID")
             if oid in seen_ids:
                 continue
+            # Must pass the article/domain filter first
+            if not _should_keep_hit(h):
+                continue
             geo, city = classify_hit(h)
             if geo:
                 seen_ids.add(oid)
@@ -473,7 +598,13 @@ def main():
         log(f"      {len(hits)} results")
     log(f"    Kept {startup_kept}/{startup_total} with European signal")
 
-    log(f"\n  Total unique posts to process: {len(all_hits)}")
+    log(f"\n  Total unique posts before filtering: {len(all_hits)}")
+
+    # Filter out non-company posts (articles, discussions, news links)
+    before = len(all_hits)
+    all_hits = [h for h in all_hits if _should_keep_hit(h)]
+    skipped = before - len(all_hits)
+    log(f"  Filtered out {skipped} non-company posts, {len(all_hits)} remaining")
 
     log(f"\nPhase 1: Fast classification (title / URL / story text)...")
 
