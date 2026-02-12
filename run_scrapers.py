@@ -126,11 +126,15 @@ def run_scrapers(scrapers):
         print(f"  Running: {name}")
         print("-" * 50)
 
+        env = os.environ.copy()
+        env["PYTHONPATH"] = PROJECT_ROOT + os.pathsep + env.get("PYTHONPATH", "")
+
         start = time.time()
         try:
             result = subprocess.run(
                 scraper["cmd"],
                 cwd=PROJECT_ROOT,
+                env=env,
                 timeout=1800,
                 capture_output=True,
                 text=True,

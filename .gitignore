@@ -8,9 +8,6 @@ venv/
 # Environment
 .env
 
-# Database
-*.db
-
 # Node
 node_modules/
 
