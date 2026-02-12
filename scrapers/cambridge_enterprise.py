@@ -13,6 +13,7 @@ import os
 
 import requests
 from bs4 import BeautifulSoup
+from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -106,8 +107,7 @@ def fetch_page(url, label):
     """Fetch a page and return BeautifulSoup, or None on failure."""
     log(f"  Fetching {label}...")
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = fetch(url, headers=HEADERS)
         return BeautifulSoup(resp.text, "html.parser")
     except requests.RequestException as e:
         log(f"  ERROR: Failed to fetch {label}: {e}")

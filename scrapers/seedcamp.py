@@ -13,6 +13,7 @@ import os
 
 import requests
 from bs4 import BeautifulSoup
+from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -156,8 +157,7 @@ def main():
 
     log(f"\nFetching {PAGE_URL}...")
     try:
-        resp = requests.get(PAGE_URL, headers=HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = fetch(PAGE_URL, headers=HEADERS)
     except requests.RequestException as e:
         log(f"ERROR: {e}")
         return

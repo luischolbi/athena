@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 
 import requests
+from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -291,8 +292,7 @@ def fetch_feed(category=None):
         params["category"] = category
 
     try:
-        resp = requests.get(url, params=params, headers=HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = fetch(url, params=params, headers=HEADERS)
     except requests.RequestException as e:
         log(f"  ERROR fetching feed{f' ({category})' if category else ''}: {e}")
         return []

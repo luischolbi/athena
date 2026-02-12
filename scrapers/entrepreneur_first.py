@@ -12,6 +12,7 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
+from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -168,8 +169,7 @@ def fetch_initial_page():
     """Fetch the portfolio page and parse featured + non-featured tiles."""
     log("  Fetching initial portfolio page...")
     try:
-        resp = requests.get(PORTFOLIO_URL, headers=HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = fetch(PORTFOLIO_URL, headers=HEADERS)
     except requests.RequestException as e:
         log(f"  ERROR: {e}")
         return []
@@ -193,13 +193,9 @@ def fetch_ajax_pages():
     for page in range(1, 30):  # safety limit
         time.sleep(REQUEST_DELAY)
         try:
-            resp = requests.post(
-                AJAX_URL,
-                data={"action": "loadmore", "query": query, "page": str(page)},
-                headers=HEADERS,
-                timeout=30,
-            )
-            resp.raise_for_status()
+            resp = fetch(AJAX_URL, method="POST",
+                         data={"action": "loadmore", "query": query, "page": str(page)},
+                         headers=HEADERS)
         except requests.RequestException as e:
             log(f"  ERROR on AJAX page {page}: {e}")
             break

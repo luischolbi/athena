@@ -13,6 +13,7 @@ import os
 import time
 
 import requests
+from scrapers import fetch
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -143,8 +144,7 @@ def fetch_all_portfolio_cards():
     # Initial page
     log("  Fetching portfolio page...")
     try:
-        resp = requests.get(PORTFOLIO_URL, headers=HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = fetch(PORTFOLIO_URL, headers=HEADERS)
     except requests.RequestException as e:
         log(f"  ERROR fetching portfolio page: {e}")
         return all_cards
@@ -163,11 +163,8 @@ def fetch_all_portfolio_cards():
         batch += 1
         time.sleep(REQUEST_DELAY)
         try:
-            resp = requests.post(
-                AJAX_URL, data={"RowCount": row_count},
-                headers=HEADERS, timeout=30,
-            )
-            resp.raise_for_status()
+            resp = fetch(AJAX_URL, method="POST", data={"RowCount": row_count},
+                         headers=HEADERS)
         except requests.RequestException as e:
             log(f"  ERROR on AJAX batch {batch}: {e}")
             break
@@ -201,8 +198,7 @@ def fetch_profile(profile_url):
     company_stage, description.  Returns None on failure.
     """
     try:
-        resp = requests.get(profile_url, headers=HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = fetch(profile_url, headers=HEADERS)
     except requests.RequestException as e:
         log(f"    WARNING: Failed to fetch {profile_url}: {e}")
         return None

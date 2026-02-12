@@ -14,6 +14,8 @@ from datetime import datetime, timedelta, timezone
 from html import unescape
 
 import feedparser
+import requests
+from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -312,9 +314,10 @@ def process_feed(feed_config):
     log(f"\n  Fetching {name}: {url}")
 
     try:
-        feed = feedparser.parse(url)
-    except Exception as e:
-        log(f"    ERROR: Failed to parse feed: {e}")
+        resp = fetch(url)
+        feed = feedparser.parse(resp.content)
+    except (requests.RequestException, Exception) as e:
+        log(f"    ERROR: Failed to fetch/parse feed: {e}")
         return 0, 0, 0, 1
 
     if feed.bozo and not feed.entries:

@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 import requests
+from scrapers import fetch
 
 # Allow running as `python scrapers/hackernews.py` from project root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -363,9 +364,9 @@ def find_existing_company(name, url):
 def fetch_user_about(username):
     """Fetch a HN user's 'about' field for location detection."""
     try:
-        resp = requests.get(f"{HN_USER_URL}/{username}", timeout=10)
-        if resp.status_code == 200:
-            return resp.json().get("about", "")
+        resp = fetch(f"{HN_USER_URL}/{username}", timeout=15, retries=2,
+                     retry_delay=2)
+        return resp.json().get("about", "")
     except requests.RequestException:
         pass
     return ""
@@ -385,8 +386,7 @@ def search_hn(query, since_ts):
             "page": page,
         }
         try:
-            resp = requests.get(HN_SEARCH_URL, params=params, timeout=30)
-            resp.raise_for_status()
+            resp = fetch(HN_SEARCH_URL, params=params)
         except requests.RequestException as e:
             print(f"  API error on page {page}: {e}")
             break
