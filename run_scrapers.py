@@ -66,6 +66,12 @@ SCRAPERS = [
         "layer": "curated",
     },
     {
+        "name": "Y Combinator",
+        "cmd": [sys.executable, "scrapers/ycombinator.py"],
+        "signal_source": "Y Combinator",
+        "layer": "curated",
+    },
+    {
         "name": "ProductHunt",
         "cmd": [sys.executable, "scrapers/producthunt.py"],
         "signal_source": "ProductHunt",
@@ -248,6 +254,7 @@ def print_summary(results, failed, dupes_merged, cross_matches, score_dist, quic
         ("Seedcamp", "Seedcamp"),
         ("Cambridge Enterprise", "Cambridge Enterprise"),
         ("Imperial College", "Imperial College"),
+        ("Y Combinator", "Y Combinator"),
     ]
     realtime_sources = [
         ("HackerNews", "HackerNews"),
