@@ -1,19 +1,45 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function TopBar({ stats }) {
+  const location = useLocation();
+  const isTop20 = location.pathname === '/top20';
+  const isDashboard = location.pathname === '/';
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-athena-bg/95 backdrop-blur-md border-b border-athena-border h-14">
       <div className="max-w-[1440px] mx-auto px-6 h-full flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 no-underline group">
-          <span className="text-athena-accent text-lg">◆</span>
-          <span className="font-mono font-bold text-athena-text tracking-[0.15em] text-[13px]">
-            ATHENA
-          </span>
-          <span className="hidden lg:block text-[13px] text-athena-muted font-sans ml-2 pl-3 border-l border-athena-border">
-            European Pre-Seed Intelligence
-          </span>
-        </Link>
+        {/* Logo + Nav */}
+        <div className="flex items-center gap-5">
+          <Link to="/" className="flex items-center gap-2.5 no-underline group">
+            <span className="text-athena-accent text-lg">◆</span>
+            <span className="font-mono font-bold text-athena-text tracking-[0.15em] text-[13px]">
+              ATHENA
+            </span>
+          </Link>
+
+          <div className="hidden sm:flex items-center gap-1 pl-4 border-l border-athena-border">
+            <Link
+              to="/"
+              className={`px-3 py-1 rounded-md text-[12px] font-sans no-underline transition-colors ${
+                isDashboard
+                  ? 'text-athena-accent bg-athena-accent/10'
+                  : 'text-athena-muted hover:text-athena-text'
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/top20"
+              className={`px-3 py-1 rounded-md text-[12px] font-sans no-underline transition-colors ${
+                isTop20
+                  ? 'text-athena-accent bg-athena-accent/10'
+                  : 'text-athena-muted hover:text-athena-text'
+              }`}
+            >
+              Top 20
+            </Link>
+          </div>
+        </div>
 
         {/* Stats */}
         <div className="font-mono text-xs text-athena-muted">

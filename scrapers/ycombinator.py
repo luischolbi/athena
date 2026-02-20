@@ -19,14 +19,19 @@ from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import date
 from database.database import (
     init_db,
     get_connection,
     insert_company,
     insert_signal,
     insert_program,
+    insert_founder,
     update_company,
+    update_company_stage,
 )
+
+from html import unescape
 
 API_URL = "https://api.ycombinator.com/v0.1/companies"
 
@@ -100,6 +105,43 @@ def parse_city(locations):
     return None
 
 
+def fetch_founders_from_page(yc_url):
+    """Fetch a YC company page and extract founders from Inertia.js data-page JSON."""
+    if not yc_url:
+        return []
+    try:
+        resp = fetch(yc_url, headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/120.0.0.0 Safari/537.36"
+        })
+    except requests.RequestException:
+        return []
+
+    # Find the Inertia.js data-page attribute (on any element)
+    match = re.search(r'data-page="([^"]+)"', resp.text)
+    if not match:
+        return []
+
+    try:
+        page_data = json.loads(unescape(match.group(1)))
+        founders_raw = page_data.get("props", {}).get("company", {}).get("founders", [])
+    except (json.JSONDecodeError, KeyError):
+        return []
+
+    founders = []
+    for f in founders_raw:
+        name = (f.get("full_name") or "").strip()
+        if not name:
+            continue
+        founders.append({
+            "name": name,
+            "title": (f.get("title") or "").strip() or None,
+            "linkedin_url": (f.get("linkedin_url") or "").strip() or None,
+        })
+    return founders
+
+
 def fetch_all_companies():
     """Paginate through the YC API and return all European company dicts."""
     all_companies = []
@@ -140,6 +182,7 @@ def main():
 
     new_count = 0
     existing_count = 0
+    company_ids = []  # (company_id, yc_url, name) for founder fetching
 
     for c in companies:
         name = (c.get("name") or "").strip()
@@ -186,6 +229,7 @@ def main():
                 updates["city"] = city
             if updates:
                 update_company(company_id, **updates)
+            update_company_stage(company_id, "Seed", "Y Combinator", date.today().isoformat())
             existing_count += 1
         else:
             company_id = insert_company(
@@ -197,6 +241,8 @@ def main():
                 website=website,
                 stage="Seed",
                 heat_score=2,
+                stage_source="Y Combinator",
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 
@@ -218,8 +264,36 @@ def main():
             funding_amount="$500k",
         )
 
+        company_ids.append((company_id, yc_url, name))
+
     log(f"\nY Combinator: Found {len(companies)} European companies. "
         f"{new_count} new, {existing_count} already existed.")
+
+    # Phase 2: Fetch founders from individual company pages
+    log(f"\nPhase 2: Fetching founders from {len(company_ids)} company pages...")
+    founder_total = 0
+    companies_with_founders = 0
+
+    for i, (cid, yc_url, cname) in enumerate(company_ids):
+        if i > 0 and i % 50 == 0:
+            log(f"  Progress: {i}/{len(company_ids)} pages, {founder_total} founders found")
+
+        founders = fetch_founders_from_page(yc_url)
+        if founders:
+            companies_with_founders += 1
+            for f in founders:
+                insert_founder(
+                    company_id=cid,
+                    name=f["name"],
+                    title=f["title"],
+                    linkedin_url=f["linkedin_url"],
+                    source="Y Combinator",
+                )
+                founder_total += 1
+
+        time.sleep(0.5)  # Rate limit
+
+    log(f"\n  Founders: {founder_total} from {companies_with_founders} companies")
 
 
 if __name__ == "__main__":

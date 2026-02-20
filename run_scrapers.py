@@ -72,6 +72,73 @@ SCRAPERS = [
         "layer": "curated",
     },
     {
+        "name": "University of Oxford",
+        "cmd": [sys.executable, "scrapers/oxford.py"],
+        "signal_source": "University of Oxford",
+        "layer": "curated",
+    },
+    {
+        "name": "EPFL",
+        "cmd": [sys.executable, "scrapers/epfl.py"],
+        "signal_source": "EPFL",
+        "layer": "curated",
+    },
+    {
+        "name": "DTU Science Park",
+        "cmd": [sys.executable, "scrapers/dtu.py"],
+        "signal_source": "DTU Science Park",
+        "layer": "curated",
+    },
+    {
+        "name": "KTH Innovation",
+        "cmd": [sys.executable, "scrapers/kth.py"],
+        "signal_source": "KTH Innovation",
+        "layer": "curated",
+    },
+    {
+        "name": "University of Zurich",
+        "cmd": [sys.executable, "scrapers/uzh.py"],
+        "signal_source": "University of Zurich",
+        "layer": "curated",
+    },
+    {
+        "name": "Antler",
+        "cmd": [sys.executable, "scrapers/antler.py"],
+        "signal_source": "Antler",
+        "layer": "curated",
+    },
+    {
+        "name": "EWOR",
+        "cmd": [sys.executable, "scrapers/ewor.py"],
+        "signal_source": "EWOR",
+        "layer": "curated",
+    },
+    {
+        "name": "Techstars",
+        "cmd": [sys.executable, "scrapers/techstars.py"],
+        "signal_source": "Techstars",
+        "layer": "curated",
+    },
+    {
+        "name": "500 Global",
+        "cmd": [sys.executable, "scrapers/fivehundred_global.py"],
+        "signal_source": "500 Global",
+        "layer": "curated",
+    },
+    {
+        "name": "Swedish Accelerators",
+        "cmd": [sys.executable, "scrapers/swedish_accelerators.py"],
+        "signal_source": "Swedish Accelerators",
+        "source_type": "swedish_accelerator",
+        "layer": "curated",
+    },
+    {
+        "name": "EU-Startups",
+        "cmd": [sys.executable, "scrapers/eu_startups.py", "--since", "2026-01-01"],
+        "signal_source": "EU-Startups",
+        "layer": "realtime",
+    },
+    {
         "name": "ProductHunt",
         "cmd": [sys.executable, "scrapers/producthunt.py"],
         "signal_source": "ProductHunt",
@@ -217,11 +284,11 @@ def run_matcher():
 
 
 def run_scorer():
-    """Recalculate all heat scores. Returns dict of {score: count}."""
+    """Recalculate all Athena Scores. Returns dict of {priority: count}."""
     from scoring.scorer import score_all_companies
 
     print("-" * 50)
-    print("  Running: Heat Scorer")
+    print("  Running: Athena Scorer")
     print("-" * 50)
 
     total = score_all_companies()
@@ -229,12 +296,18 @@ def run_scorer():
     print()
 
     conn = get_connection()
-    dist = conn.execute("""
-        SELECT heat_score, COUNT(*) AS cnt
-        FROM companies GROUP BY heat_score ORDER BY heat_score
-    """).fetchall()
+    dist = {}
+    for label, low, high in [("High Priority", 4.0, 5.1),
+                              ("Worth Investigating", 3.5, 4.0),
+                              ("On Radar", 3.0, 3.5),
+                              ("Low Priority", 0, 3.0)]:
+        cnt = conn.execute(
+            "SELECT COUNT(*) FROM companies WHERE athena_score >= ? AND athena_score < ?",
+            (low, high),
+        ).fetchone()[0]
+        dist[label] = cnt
     conn.close()
-    return {row[0]: row[1] for row in dist}
+    return dist
 
 
 def print_summary(results, failed, dupes_merged, cross_matches, score_dist, quick):
@@ -255,9 +328,20 @@ def print_summary(results, failed, dupes_merged, cross_matches, score_dist, quic
         ("Cambridge Enterprise", "Cambridge Enterprise"),
         ("Imperial College", "Imperial College"),
         ("Y Combinator", "Y Combinator"),
+        ("University of Oxford", "University of Oxford"),
+        ("EPFL", "EPFL"),
+        ("DTU Science Park", "DTU Science Park"),
+        ("KTH Innovation", "KTH Innovation"),
+        ("University of Zurich", "University of Zurich"),
+        ("Antler", "Antler"),
+        ("EWOR", "EWOR"),
+        ("Techstars", "Techstars"),
+        ("500 Global", "500 Global"),
+        ("Swedish Accelerators", "Swedish Accelerators"),
     ]
     realtime_sources = [
         ("HackerNews", "HackerNews"),
+        ("EU-Startups", "EU-Startups"),
         ("ProductHunt", "ProductHunt"),
         ("RSS Feeds", "RSS Feeds"),
     ]
@@ -268,8 +352,9 @@ def print_summary(results, failed, dupes_merged, cross_matches, score_dist, quic
         if r:
             return r["total_signals"]
         # Wasn't run this time — pull from DB
-        src_type = "rss" if name == "RSS Feeds" else None
-        src_name = "rss" if name == "RSS Feeds" else name
+        type_map = {"RSS Feeds": "rss", "Swedish Accelerators": "swedish_accelerator"}
+        src_type = type_map.get(name)
+        src_name = type_map.get(name, name)
         sigs, _ = get_source_counts(src_name, source_type=src_type)
         return sigs
 
@@ -319,11 +404,10 @@ def print_summary(results, failed, dupes_merged, cross_matches, score_dist, quic
     print()
 
     # Scoring
-    print("  SCORING:")
-    for score in range(1, 11):
-        count = score_dist.get(score, 0)
+    print("  ATHENA SCORE:")
+    for tier, count in score_dist.items():
         if count > 0:
-            print(f"    {'Score ' + str(score) + ':':26s} {count:>4} companies")
+            print(f"    {tier + ':':26s} {count:>4} companies")
 
     print()
 
@@ -360,6 +444,25 @@ def main():
     print("=" * 50)
     print(f"  Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
+
+    # 0. Import university reference data (full runs only)
+    if not args.quick:
+        print("-" * 50)
+        print("  Running: University Reference Import")
+        print("-" * 50)
+        env = os.environ.copy()
+        env["PYTHONPATH"] = PROJECT_ROOT + os.pathsep + env.get("PYTHONPATH", "")
+        result = subprocess.run(
+            [sys.executable, "import_universities.py"],
+            cwd=PROJECT_ROOT, env=env, capture_output=True, text=True,
+        )
+        if result.stdout:
+            for line in result.stdout.strip().split("\n"):
+                print(f"  {line}")
+        if result.returncode != 0 and result.stderr:
+            for line in result.stderr.strip().split("\n")[-3:]:
+                print(f"  STDERR: {line}")
+        print()
 
     # Filter scrapers
     if args.quick:

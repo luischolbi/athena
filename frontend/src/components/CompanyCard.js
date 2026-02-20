@@ -1,14 +1,18 @@
-function ScoreBadge({ score, isCrossLayer, rising }) {
+import { useState } from 'react';
+import { createFounder, updateFounder, deleteFounder } from '../api';
+
+function ScoreBadge({ score, isCrossLayer, priority }) {
+  const s = score != null ? score : 0;
   let bg, text, glow;
-  if (score >= 8) {
+  if (s >= 4.0) {
+    bg = 'bg-emerald-500/20';
+    text = 'text-emerald-400';
+    glow = 'shadow-[0_0_14px_rgba(52,211,153,0.25)]';
+  } else if (s >= 3.5) {
     bg = 'bg-blue-500/20';
     text = 'text-blue-400';
-    glow = 'shadow-[0_0_14px_rgba(59,130,246,0.25)]';
-  } else if (score >= 6) {
-    bg = 'bg-athena-accent/12';
-    text = 'text-athena-accent';
     glow = '';
-  } else if (score >= 4) {
+  } else if (s >= 3.0) {
     bg = 'bg-amber-500/10';
     text = 'text-amber-400';
     glow = '';
@@ -21,15 +25,7 @@ function ScoreBadge({ score, isCrossLayer, rising }) {
   return (
     <div className="flex flex-col items-center gap-0.5">
       <div className={`relative w-11 h-11 rounded-xl flex items-center justify-center ${bg} ${glow}`}>
-        <span className={`font-mono font-bold text-[15px] leading-none ${text}`}>{score}</span>
-        <span className={`font-mono text-[10px] leading-none ${text} opacity-40 ml-px`}>/10</span>
-        {rising && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center" title="Rising — score +2 since last run">
-            <svg className="w-2.5 h-2.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7V17" />
-            </svg>
-          </span>
-        )}
+        <span className={`font-mono font-bold text-[15px] leading-none ${text}`}>{s.toFixed(1)}</span>
       </div>
       {isCrossLayer && (
         <span className="text-[10px] text-athena-accent" title="Cross-layer match">✦</span>
@@ -38,7 +34,57 @@ function ScoreBadge({ score, isCrossLayer, rising }) {
   );
 }
 
-function StagePill({ stage }) {
+function PriorityBadge({ priority }) {
+  if (priority === 'high') {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-emerald-400/80 border border-emerald-500/20 leading-relaxed">
+        High Priority
+      </span>
+    );
+  }
+  if (priority === 'investigate') {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-blue-400/80 border border-blue-500/20 leading-relaxed">
+        Investigate
+      </span>
+    );
+  }
+  if (priority === 'radar') {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-athena-muted/60 border border-athena-muted/20 leading-relaxed">
+        On Radar
+      </span>
+    );
+  }
+  return null;
+}
+
+function TierBadge({ tier }) {
+  if (tier === 1) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-emerald-400/80 border border-emerald-500/20 leading-relaxed" title="Tier 1 — Curated data">
+        Curated
+      </span>
+    );
+  }
+  if (tier === 2) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-blue-400/80 border border-blue-500/20 leading-relaxed" title="Tier 2 — Standard data">
+        Standard
+      </span>
+    );
+  }
+  if (tier === 3) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-athena-muted/50 border border-athena-muted/15 leading-relaxed" title="Tier 3 — Discovery data">
+        Discovery
+      </span>
+    );
+  }
+  return null;
+}
+
+function StagePill({ stage, stageDisplay, stageConfidence }) {
   const styles = {
     'Pre-money':  'border-athena-muted/30 text-athena-muted',
     'Grant only': 'border-blue-500/30 text-blue-400',
@@ -47,10 +93,14 @@ function StagePill({ stage }) {
     'Series A':   'border-purple-500/30 text-purple-400',
     'Unknown':    'border-dashed border-athena-muted/20 text-athena-muted/50',
   };
-  const cls = styles[stage] || styles['Unknown'];
+  const isOutdated = stageConfidence === 'outdated';
+  const isStale = stageConfidence === 'stale';
+  const lookupStage = isOutdated ? 'Unknown' : stage;
+  const cls = styles[lookupStage] || styles['Unknown'];
+  const opacity = isStale ? 'opacity-60' : '';
   return (
-    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${cls}`}>
-      {stage || 'Unknown'}
+    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${cls} ${opacity}`}>
+      {stageDisplay || stage || 'Unknown'}
     </span>
   );
 }
@@ -93,20 +143,16 @@ function SignalBadge({ signal }) {
 
 /** Extract the best date to display for a company */
 function getDisplayDate(company) {
-  // 1. Cohort/year from programs
   if (company.programs && company.programs.length > 0) {
     const p = company.programs[0];
     if (p.cohort) {
-      // VK stages: "Stage 2" — also show program context
       if (p.cohort.startsWith('Stage')) {
         return `${p.cohort}`;
       }
-      // Year cohort
       return `${p.cohort} cohort`;
     }
   }
 
-  // 2. Published date from realtime signals
   for (const s of company.signals || []) {
     const meta = s.metadata || {};
     if (meta.published) return meta.published;
@@ -126,7 +172,6 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
   const badges = [];
   for (const s of company.signals || []) {
     if (seenSources.has(s.source_name)) {
-      // For HN, keep the one with most points
       if (s.source_name === 'HackerNews') {
         const existing = badges.find(b => b.source_name === 'HackerNews');
         if (existing && (s.metadata?.points || 0) > (existing.metadata?.points || 0)) {
@@ -154,13 +199,24 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
       >
         {/* Score */}
         <div className="flex-shrink-0 pt-0.5">
-          <ScoreBadge score={company.heat_score} isCrossLayer={company.is_cross_layer} rising={company.rising} />
+          <ScoreBadge score={company.athena_score} isCrossLayer={company.is_cross_layer} priority={company.priority} />
         </div>
 
         {/* Main content */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-sans font-semibold text-athena-text text-[15px] truncate">
+          <h3 className="font-sans font-semibold text-athena-text text-[15px] truncate flex items-center gap-1.5">
             {company.name}
+            <PriorityBadge priority={company.priority} />
+            <TierBadge tier={company.data_tier} />
+            {company.cohort ? (
+              <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-violet-400/80 border border-violet-500/20 leading-relaxed">
+                {company.cohort}
+              </span>
+            ) : company.programs && company.programs.length > 0 ? (
+              <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-athena-muted/50 border border-athena-muted/15 leading-relaxed">
+                Year unknown
+              </span>
+            ) : null}
           </h3>
           {company.description && (
             <p className="text-[13px] text-athena-muted mt-0.5 line-clamp-1">
@@ -175,6 +231,21 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
                 {company.sector}
               </span>
             )}
+            {company.company_status === 'inactive' && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] text-orange-400/70 border border-orange-500/15">
+                Website inactive
+              </span>
+            )}
+            {company.company_status === 'redirect' && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] text-amber-400/70 border border-amber-500/15">
+                Domain changed
+              </span>
+            )}
+            {company.freshness_score != null && company.freshness_score <= 2 && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] text-athena-muted/50 border border-athena-muted/15">
+                Data may be outdated
+              </span>
+            )}
             {company.geography && (
               <span className="flex items-center gap-1">
                 <svg className="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -187,12 +258,17 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
             {displayDate && (
               <span className="font-mono text-athena-muted/60">{displayDate}</span>
             )}
-            <StagePill stage={company.stage} />
+            <StagePill stage={company.stage} stageDisplay={company.stage_display} stageConfidence={company.stage_confidence} />
           </div>
         </div>
 
         {/* Signal badges — right side */}
         <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
+          {company.source_count > 0 && (
+            <span className="text-[10px] text-athena-muted/60 font-mono mb-0.5">
+              {company.source_count} {company.source_count === 1 ? 'source' : 'sources'}
+            </span>
+          )}
           {badges.slice(0, 3).map((s, i) => (
             <SignalBadge key={i} signal={s} />
           ))}
@@ -210,9 +286,12 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
 
 
 function ScoreBar({ label, score, max, detail }) {
-  const pct = max > 0 ? (score / max) * 100 : 0;
+  const isNull = score == null;
+  const s = isNull ? 0 : score;
+  const pct = max > 0 ? (s / max) * 100 : 0;
   let barColor;
-  if (pct >= 75) barColor = 'bg-athena-accent';
+  if (isNull) barColor = 'bg-transparent';
+  else if (pct >= 75) barColor = 'bg-athena-accent';
   else if (pct >= 50) barColor = 'bg-amber-400';
   else if (pct > 0) barColor = 'bg-athena-muted/40';
   else barColor = 'bg-transparent';
@@ -221,25 +300,153 @@ function ScoreBar({ label, score, max, detail }) {
     <div className="space-y-1">
       <div className="flex items-center justify-between">
         <span className="text-[12px] font-medium text-athena-text">{label}</span>
-        <span className="font-mono text-[12px] text-athena-muted">{score}/{max}</span>
+        <span className="font-mono text-[12px] text-athena-muted">{isNull ? '—' : `${s}/${max}`}</span>
       </div>
       <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-        <div
-          className={`h-full rounded-full ${barColor} transition-all duration-500`}
-          style={{ width: `${pct}%` }}
-        />
+        {isNull ? (
+          <div className="h-full w-full bg-athena-muted/10" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(255,255,255,0.03) 4px, rgba(255,255,255,0.03) 8px)' }} />
+        ) : (
+          <div
+            className={`h-full rounded-full ${barColor} transition-all duration-500`}
+            style={{ width: `${pct}%` }}
+          />
+        )}
       </div>
       <p className="text-[11px] text-athena-muted/50 truncate">{detail}</p>
     </div>
   );
 }
 
+function WebsiteStatus({ status }) {
+  if (status === 'active') {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400/70">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        Active
+      </span>
+    );
+  }
+  if (status === 'inactive') {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-orange-400/70">
+        <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+        Inactive
+      </span>
+    );
+  }
+  if (status === 'redirect') {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-amber-400/70">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+        Redirect
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-[10px] font-mono text-athena-muted/50">
+      <span className="w-1.5 h-1.5 rounded-full bg-athena-muted/40" />
+      Unknown
+    </span>
+  );
+}
+
+function FounderForm({ initial, onSave, onCancel, saving }) {
+  const [name, setName] = useState(initial?.name || '');
+  const [title, setTitle] = useState(initial?.title || '');
+  const [linkedinUrl, setLinkedinUrl] = useState(initial?.linkedin_url || '');
+  const [email, setEmail] = useState(initial?.email || '');
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!name.trim() || !title.trim()) return;
+    onSave({ name: name.trim(), title: title.trim(), linkedin_url: linkedinUrl.trim() || null, email: email.trim() || null });
+  }
+
+  const inputCls = "w-full h-7 px-2.5 rounded bg-athena-bg border border-athena-border text-[12px] text-athena-text placeholder:text-athena-muted/40 focus:outline-none focus:border-athena-accent/40 font-sans";
+
+  return (
+    <form onSubmit={handleSubmit} onClick={(e) => e.stopPropagation()} className="space-y-2 mt-2">
+      <div className="grid grid-cols-2 gap-2">
+        <input type="text" placeholder="Name *" value={name} onChange={(e) => setName(e.target.value)} className={inputCls} required />
+        <input type="text" placeholder="Title/Role *" value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} required />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <input type="url" placeholder="LinkedIn URL" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className={inputCls} />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
+      </div>
+      <div className="flex items-center gap-2 pt-1">
+        <button type="submit" disabled={saving || !name.trim() || !title.trim()}
+          className="h-7 px-3 rounded text-[11px] font-medium bg-athena-accent/15 text-athena-accent border border-athena-accent/30 hover:bg-athena-accent/25 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+          {saving ? 'Saving...' : (initial ? 'Update' : 'Add Founder')}
+        </button>
+        <button type="button" onClick={(e) => { e.stopPropagation(); onCancel(); }}
+          className="h-7 px-3 rounded text-[11px] font-medium text-athena-muted hover:text-athena-text transition-colors">
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function CompanyDetail({ company }) {
-  const bd = company.score_breakdown || { total: company.heat_score, reasons: [], components: null };
+  const bd = company.score_breakdown || { total: company.athena_score || 0, reasons: [], components: null };
   const components = bd.components;
+  const [founders, setFounders] = useState(company.founders || []);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  async function handleAddFounder(data) {
+    setSaving(true);
+    try {
+      const created = await createFounder(company.id, data);
+      setFounders((prev) => [...prev, created]);
+      setShowAddForm(false);
+    } catch (err) {
+      console.error('Failed to add founder:', err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleUpdateFounder(founderId, data) {
+    setSaving(true);
+    try {
+      const updated = await updateFounder(founderId, data);
+      setFounders((prev) => prev.map((f) => f.id === founderId ? updated : f));
+      setEditingId(null);
+    } catch (err) {
+      console.error('Failed to update founder:', err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDeleteFounder(founderId) {
+    try {
+      await deleteFounder(founderId);
+      setFounders((prev) => prev.filter((f) => f.id !== founderId));
+    } catch (err) {
+      console.error('Failed to delete founder:', err);
+    }
+  }
 
   return (
     <div className="mt-1 p-5 rounded-xl bg-athena-card border border-athena-border space-y-5 animate-fade-in">
+      {/* Header row: tier + stage context */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <TierBadge tier={company.data_tier} />
+        {company.stage && (
+          <StagePill stage={company.stage} stageDisplay={company.stage_display} stageConfidence={company.stage_confidence} />
+        )}
+        {company.programs && company.programs.length > 0 && (
+          <span className="text-[11px] text-athena-muted/60">
+            {company.programs.map(p => `${p.program_name}${p.cohort ? ` ${p.cohort}` : ''}`).join(' · ')}
+          </span>
+        )}
+      </div>
+
       {/* Description */}
       {company.description && (
         <p className="text-[13px] text-athena-muted leading-relaxed">
@@ -247,40 +454,43 @@ function CompanyDetail({ company }) {
         </p>
       )}
 
-      {/* Website */}
+      {/* Website with status */}
       {company.website && (
-        <a
-          href={company.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-[13px] text-athena-accent hover:text-athena-accent-hover font-medium"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-          {company.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href={company.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[13px] text-athena-accent hover:text-athena-accent-hover font-medium"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            {company.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+          </a>
+          <WebsiteStatus status={company.company_status} />
+        </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-5">
-        {/* Score breakdown — component bars */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* Score breakdown */}
         <div className="p-4 rounded-lg bg-white/[0.02] border border-athena-border">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-[11px] font-mono font-medium text-athena-muted uppercase tracking-wider">
               Score Breakdown
             </h4>
-            <span className="font-mono font-bold text-[14px] text-athena-text">{bd.total}/10</span>
+            <span className="font-mono font-bold text-[14px] text-athena-text">{typeof bd.total === 'number' ? bd.total.toFixed(1) : bd.total} / 5.0</span>
           </div>
           {components ? (
             <div className="space-y-3">
-              <ScoreBar label="Program" score={components.program.score} max={components.program.max} detail={components.program.label} />
-              <ScoreBar label="Buzz" score={components.buzz.score} max={components.buzz.max} detail={components.buzz.label} />
-              <ScoreBar label="Sources" score={components.sources.score} max={components.sources.max} detail={components.sources.label} />
-              <ScoreBar label="Recency" score={components.recency.score} max={components.recency.max} detail={components.recency.label} />
+              <ScoreBar label={`Thesis Fit (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} detail={components.thesis?.label} />
+              <ScoreBar label={`Team Signal (${Math.round((components.team?.weight || 0) * 100)}%)`} score={components.team?.score} max={components.team?.max || 5} detail={components.team?.label} />
+              <ScoreBar label={`Program (${Math.round((components.program?.weight || 0) * 100)}%)`} score={components.program?.score ?? 0} max={components.program?.max || 5} detail={components.program?.label} />
+              <ScoreBar label={`Traction (${Math.round((components.traction?.weight || 0) * 100)}%)`} score={components.traction?.score ?? 0} max={components.traction?.max || 5} detail={components.traction?.label} />
+              <ScoreBar label={`Data (${Math.round((components.data?.weight || 0) * 100)}%)`} score={components.data?.score ?? 0} max={components.data?.max || 5} detail={components.data?.label} />
             </div>
           ) : (
-            /* Fallback: flat reason list for older cached data */
             bd.reasons.length > 0 ? (
               <ul className="space-y-1.5">
                 {bd.reasons.map((r, i) => (
@@ -296,23 +506,106 @@ function CompanyDetail({ company }) {
           )}
         </div>
 
-        {/* Programs */}
-        {company.programs && company.programs.length > 0 && (
+        {/* Right column: Founders + Programs */}
+        <div className="space-y-4">
+          {/* Founders */}
           <div className="p-4 rounded-lg bg-white/[0.02] border border-athena-border">
             <h4 className="text-[11px] font-mono font-medium text-athena-muted uppercase tracking-wider mb-3">
-              Programs
+              Founders
             </h4>
-            <div className="space-y-2">
-              {company.programs.map((p, i) => (
-                <div key={i} className="text-[12px] text-athena-muted">
-                  <span className="text-athena-text font-medium">{p.program_name}</span>
-                  {p.program_type && <span className="text-athena-muted/60"> · {p.program_type}</span>}
-                  {p.cohort && <span className="font-mono text-athena-muted/50 ml-2">{p.cohort}</span>}
-                </div>
-              ))}
-            </div>
+            {founders.length > 0 ? (
+              <div className="space-y-2">
+                {founders.map((f) => (
+                  <div key={f.id}>
+                    {editingId === f.id ? (
+                      <FounderForm
+                        initial={f}
+                        saving={saving}
+                        onSave={(data) => handleUpdateFounder(f.id, data)}
+                        onCancel={() => setEditingId(null)}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 group">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[12px] text-athena-text font-medium">{f.name}</span>
+                          {f.title && (
+                            <span className="text-[11px] text-athena-muted/60 ml-2">{f.title}</span>
+                          )}
+                        </div>
+                        {f.linkedin_url && (
+                          <a
+                            href={f.linkedin_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-shrink-0 text-[11px] text-sky-400 hover:text-sky-300 font-medium"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            LinkedIn
+                          </a>
+                        )}
+                        <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEditingId(f.id); setShowAddForm(false); }}
+                            className="w-5 h-5 rounded flex items-center justify-center text-athena-muted/50 hover:text-athena-accent hover:bg-athena-accent/10 transition-colors"
+                            title="Edit"
+                          >
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteFounder(f.id); }}
+                            className="w-5 h-5 rounded flex items-center justify-center text-athena-muted/50 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                            title="Delete"
+                          >
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-athena-muted/40">No founder data</p>
+            )}
+
+            {/* Add founder form / button */}
+            {showAddForm ? (
+              <FounderForm saving={saving} onSave={handleAddFounder} onCancel={() => setShowAddForm(false)} />
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowAddForm(true); setEditingId(null); }}
+                className="mt-3 inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[11px] font-medium text-athena-muted hover:text-athena-accent hover:bg-athena-accent/10 border border-athena-border hover:border-athena-accent/30 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Founder
+              </button>
+            )}
           </div>
-        )}
+
+          {/* Programs */}
+          {company.programs && company.programs.length > 0 && (
+            <div className="p-4 rounded-lg bg-white/[0.02] border border-athena-border">
+              <h4 className="text-[11px] font-mono font-medium text-athena-muted uppercase tracking-wider mb-3">
+                Programs
+              </h4>
+              <div className="space-y-2">
+                {company.programs.map((p, i) => (
+                  <div key={i} className="text-[12px] text-athena-muted">
+                    <span className="text-athena-text font-medium">{p.program_name}</span>
+                    {p.program_type && <span className="text-athena-muted/60"> · {p.program_type}</span>}
+                    {p.cohort && <span className="font-mono text-athena-muted/50 ml-2">{p.cohort}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Signal timeline */}
@@ -321,13 +614,16 @@ function CompanyDetail({ company }) {
           <h4 className="text-[11px] font-mono font-medium text-athena-muted uppercase tracking-wider mb-3">
             Signals
           </h4>
-          <div className="space-y-1">
+          <div className="space-y-0">
             {company.signals.map((s, i) => {
               const meta = s.metadata || {};
               const pts = s.source_name === 'HackerNews' && meta.points ? ` · ${meta.points}pts` : '';
               const date = meta.published || meta.posted_at?.split('T')[0] || s.detected_at?.split(' ')[0] || '';
               return (
-                <div key={i} className="flex items-center gap-3 text-[12px] py-1.5 border-b border-athena-border/50 last:border-0">
+                <div key={i} className="flex items-center gap-3 text-[12px] py-2 border-b border-athena-border/50 last:border-0">
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    s.signal_layer === 'curated' ? 'bg-emerald-400' : 'bg-sky-400'
+                  }`} />
                   <span className="font-medium text-athena-text w-32 flex-shrink-0">{s.source_name}</span>
                   <span className="text-athena-muted/60">{pts}</span>
                   {s.source_url && (

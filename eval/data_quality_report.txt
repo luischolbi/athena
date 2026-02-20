@@ -1,0 +1,274 @@
+
+==============================================================================
+  ATHENA — Data Quality Report (v2)
+  Generated: 2026-02-14 19:38
+==============================================================================
+
+  Total companies: 37,783
+
+  Adding data_tier column to companies table...
+  Assigned tiers: T1=3,166  T2=1,793  T3=32,824
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  PART A: CURATED / VERIFIED SOURCES (excluding EU-Startups)               ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Companies: 6,269  (from 33 sources)
+
+  Field completeness — Curated only (6,269 companies):
+
+  Field             Filled  / Total     Pct                      
+  ─────────────── ──────── ──────── ───────  ────────────────────
+  name               6,269    6,269  100.0%  ████████████████████
+  description        4,658    6,269   74.3%  ███████████████░░░░░
+  sector             4,753    6,269   75.8%  ███████████████░░░░░
+  geography          5,062    6,269   80.7%  ████████████████░░░░
+  city               4,542    6,269   72.5%  ██████████████░░░░░░
+  website            4,525    6,269   72.2%  ██████████████░░░░░░
+  stage              5,365    6,269   85.6%  █████████████████░░░
+
+  Sector distribution — Curated only (6,269 companies):
+
+  Sector                       Count     Pct                      
+  ───────────────────────── ──────── ───────  ────────────────────
+  Other                        1,516   24.2%  █████░░░░░░░░░░░░░░░
+  AI / ML                      1,363   21.7%  ████░░░░░░░░░░░░░░░░
+  Health / Bio                   957   15.3%  ███░░░░░░░░░░░░░░░░░
+  SaaS                           926   14.8%  ███░░░░░░░░░░░░░░░░░
+  Deep Tech                      509    8.1%  ██░░░░░░░░░░░░░░░░░░
+  Fintech                        442    7.1%  █░░░░░░░░░░░░░░░░░░░
+  Climate                        406    6.5%  █░░░░░░░░░░░░░░░░░░░
+  Consumer                       108    1.7%  ░░░░░░░░░░░░░░░░░░░░
+  E-commerce                      10    0.2%  ░░░░░░░░░░░░░░░░░░░░
+  FoodTech                         6    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  Gaming                           6    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  Logistics                        6    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  EdTech                           5    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  PropTech                         4    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  Cybersecurity                    3    0.0%  ░░░░░░░░░░░░░░░░░░░░
+  LegalTech                        2    0.0%  ░░░░░░░░░░░░░░░░░░░░
+
+  Quality Score — Curated only:
+
+  Component                    Score   Weight Weighted
+  ───────────────────────── ──────── ──────── ────────
+  Field completeness           80.2%      40%    32.1%
+  Sector coverage              75.8%      20%    15.2%
+  Stage coverage               85.6%      15%    12.8%
+  Data freshness              100.0%      15%    15.0%
+  Dedup cleanliness            93.2%      10%     9.3%
+  ───────────────────────── ──────── ──────── ────────
+  OVERALL                                        84.4%
+  ██████████████████████████████████░░░░░░
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  PART B: ALL SOURCES (including EU-Startups)                              ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Companies: 37,783  (from 34 sources)
+
+  Field completeness — All sources (37,783 companies):
+
+  Field             Filled  / Total     Pct                      
+  ─────────────── ──────── ──────── ───────  ────────────────────
+  name              37,783   37,783  100.0%  ████████████████████
+  description       11,181   37,783   29.6%  ██████░░░░░░░░░░░░░░
+  sector             9,782   37,783   25.9%  █████░░░░░░░░░░░░░░░
+  geography         36,576   37,783   96.8%  ███████████████████░
+  city               4,550   37,783   12.0%  ██░░░░░░░░░░░░░░░░░░
+  website            4,530   37,783   12.0%  ██░░░░░░░░░░░░░░░░░░
+  stage             36,876   37,783   97.6%  ████████████████████
+
+  Sector distribution — All sources (37,783 companies):
+
+  Sector                       Count     Pct                      
+  ───────────────────────── ──────── ───────  ────────────────────
+  Other                       28,001   74.1%  ███████████████░░░░░
+  AI / ML                      2,844    7.5%  ██░░░░░░░░░░░░░░░░░░
+  Health / Bio                 1,812    4.8%  █░░░░░░░░░░░░░░░░░░░
+  SaaS                         1,617    4.3%  █░░░░░░░░░░░░░░░░░░░
+  Fintech                      1,078    2.9%  █░░░░░░░░░░░░░░░░░░░
+  Climate                        835    2.2%  ░░░░░░░░░░░░░░░░░░░░
+  Deep Tech                      803    2.1%  ░░░░░░░░░░░░░░░░░░░░
+  Consumer                       418    1.1%  ░░░░░░░░░░░░░░░░░░░░
+  EdTech                          64    0.2%  ░░░░░░░░░░░░░░░░░░░░
+  E-commerce                      60    0.2%  ░░░░░░░░░░░░░░░░░░░░
+  Gaming                          57    0.2%  ░░░░░░░░░░░░░░░░░░░░
+  LegalTech                       53    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  Cybersecurity                   49    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  Logistics                       42    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  FoodTech                        29    0.1%  ░░░░░░░░░░░░░░░░░░░░
+  PropTech                        21    0.1%  ░░░░░░░░░░░░░░░░░░░░
+
+  Quality Score — All sources:
+
+  Component                    Score   Weight Weighted
+  ───────────────────────── ──────── ──────── ────────
+  Field completeness           53.4%      40%    21.4%
+  Sector coverage              25.9%      20%     5.2%
+  Stage coverage               97.6%      15%    14.6%
+  Data freshness              100.0%      15%    15.0%
+  Dedup cleanliness            93.2%      10%     9.3%
+  ───────────────────────── ──────── ──────── ────────
+  OVERALL                                        65.5%
+  ██████████████████████████░░░░░░░░░░░░░░
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  SIDE-BY-SIDE COMPARISON                                                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Metric                              Curated  All Sources      Delta
+  ────────────────────────────── ──────────── ──────────── ──────────
+  Companies                            6,269      37,783    -31,514
+  Field completeness                    80.2%        53.4%     +26.7%
+  Sector coverage                       75.8%        25.9%     +49.9%
+  Stage coverage                        85.6%        97.6%     -12.0%
+  Data freshness                       100.0%       100.0%      +0.0%
+  OVERALL SCORE                         84.4%        65.5%     +18.9%
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  SOURCE TIER CLASSIFICATION                                                ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  TIER 1 — Verified (90%+ completeness):
+  Source                      Fill%   Count
+  ───────────────────────── ─────── ───────
+  ETH AI Center              100.0%      75
+  Cambridge Enterprise        98.6%     122
+  Y Combinator                98.4%     361
+  EPFL                        97.8%     243
+  Venture Kick                97.7%     935
+  Imperial College            95.8%      88
+  Techstars                   95.5%     868
+  Arctic Ventures             95.4%      28
+  University of Oxford        93.4%     275
+  University of Zurich        90.3%     148
+
+  TIER 2 — Standard (60-90% completeness):
+  Source                      Fill%   Count
+  ───────────────────────── ─────── ───────
+  DTU Science Park            89.4%     273
+  LEAD                        87.1%     144
+  Inkubera                    86.5%      18
+  KTH Innovation              85.7%      58
+  Entrepreneur First          85.3%     256
+  Antler                      84.9%     363
+  500 Global                  83.2%     108
+  Brewhouse                   78.6%      14
+  Uminova                     77.0%      18
+  Hetch                       75.4%      58
+  Seedcamp                    70.9%     334
+  Tech.eu                     67.0%      16
+  Innovatum                   66.8%      31
+  EWOR                        66.5%      35
+  Minc                        62.6%      50
+  LU Innovation               61.6%      35
+
+  TIER 3 — Discovery (<60% completeness):
+  Source                      Fill%   Count
+  ───────────────────────── ─────── ───────
+  GU Ventures                 59.7%      17
+  Krinova                     59.2%      14
+  Sting                       58.7%     274
+  Chalmers Ventures           58.7%     122
+  EU-Startups                 48.1%  31,514
+  HackerNews                  36.1%     585
+  ProductHunt                 22.4%     302
+  Sifted                      14.3%       1
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  QUALITY METRICS PER TIER                                                  ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Tier 1 — Verified (3,166 companies)
+  ────────────────────────────────────────────────────────────
+  Field               Pct                      
+  name             100.0%  ████████████████████
+  description       97.6%  ████████████████████
+  sector            91.9%  ██████████████████░░
+  geography        100.0%  ████████████████████
+  city              99.2%  ████████████████████
+  website           86.5%  █████████████████░░░
+  stage            100.0%  ████████████████████
+  Sector classified:   91.9%  ██████████████████░░
+  Quality score:       96.3%  ███████████████████░
+
+  Tier 2 — Standard (1,793 companies)
+  ────────────────────────────────────────────────────────────
+  Field               Pct                      
+  name             100.0%  ████████████████████
+  description       84.6%  █████████████████░░░
+  sector            75.5%  ███████████████░░░░░
+  geography         80.0%  ████████████████░░░░
+  city              54.0%  ███████████░░░░░░░░░
+  website           71.3%  ██████████████░░░░░░
+  stage             99.1%  ████████████████████
+  Sector classified:   75.5%  ███████████████░░░░░
+  Quality score:       86.5%  █████████████████░░░
+
+  Tier 3 — Discovery (32,824 companies)
+  ────────────────────────────────────────────────────────────
+  Field               Pct                      
+  name             100.0%  ████████████████████
+  description       20.0%  ████░░░░░░░░░░░░░░░░
+  sector            16.8%  ███░░░░░░░░░░░░░░░░░
+  geography         97.4%  ███████████████████░
+  city               1.3%  ░░░░░░░░░░░░░░░░░░░░
+  website            1.6%  ░░░░░░░░░░░░░░░░░░░░
+  stage             97.3%  ███████████████████░
+  Sector classified:   16.8%  ███░░░░░░░░░░░░░░░░░
+  Quality score:       61.4%  ████████████░░░░░░░░
+
+  Tier                      Count    Fill%  Sector%    Score
+  ────────────────────── ──────── ──────── ──────── ────────
+  T1 Verified               3,166    96.5%    91.9%    96.3%
+  T2 Standard               1,793    80.6%    75.5%    86.5%
+  T3 Discovery             32,824    47.8%    16.8%    61.4%
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  DUPLICATION RATE                                                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Original company count:      37,989
+  Obvious duplicates merged:      206  (0.5%)
+  Suspected dupes in review:     2386 groups (16,643 entries)
+  Current company count:       37,783
+  Estimated duplication rate: 6.8%
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  RECALL ESTIMATE                                                           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Source                      Known Captured   Recall                      
+  ───────────────────────── ─────── ──────── ────────  ────────────────────
+  Venture Kick                  957      935      98%  ████████████████████
+  EPFL                          800      243      30%  ██████░░░░░░░░░░░░░░
+  DTU Science Park              550      273      50%  ██████████░░░░░░░░░░
+  Seedcamp                      400      334      84%  █████████████████░░░
+  University of Zurich          400      148      37%  ███████░░░░░░░░░░░░░
+  Entrepreneur First            300      256      85%  █████████████████░░░
+  University of Oxford          300      275      92%  ██████████████████░░
+  Cambridge Enterprise          150      122      81%  ████████████████░░░░
+  Imperial College              100       88      88%  ██████████████████░░
+  ETH AI Center                  30       75     100%  ██████████████████████████████████████████████████
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  PRECISION SAMPLE                                                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+  Exported 50 fully-complete companies to /Users/luischolbi/athena/eval/precision_sample.csv
+
+  Name                      Sector          Geo             City            Source         
+  ───────────────────────── ─────────────── ─────────────── ─────────────── ───────────────
+  OptiChroniX GmbH          AI / ML         Switzerland     Schoenenbuch    Venture Kick   
+  Myricx Pharma Limited     Health / Bio    United Kingdom  London          Imperial Colleg
+  Swistor SA                Deep Tech       Switzerland     Lausanne        Venture Kick   
+  vestr AG                  Fintech         Switzerland     Zug             Venture Kick   
+  Flow.ai                   AI / ML         Netherlands     Tilburg         Techstars      
+  Icoflex                   Deep Tech       Switzerland     Lausanne        EPFL           
+  Fainite AG                AI / ML         Switzerland     Meilen          Venture Kick   
+  ClimeRock                 Health / Bio    France          Colombes        Techstars      
+  Up Green Recycling Sàrl   Climate         Switzerland     Genève          Venture Kick   
+  Adira Health              AI / ML         Switzerland     Hausen am Albis Venture Kick   
+
+==============================================================================

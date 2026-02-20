@@ -10,7 +10,7 @@ import json
 import re
 import sys
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from html import unescape
 
 import feedparser
@@ -403,6 +403,8 @@ def process_feed(feed_config):
                 city=city,
                 stage="Unknown",
                 heat_score=1,
+                stage_source=source_name,
+                stage_detected_date=date.today().isoformat(),
             )
             new_companies += 1
 

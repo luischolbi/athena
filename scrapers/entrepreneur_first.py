@@ -16,13 +16,17 @@ from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import date
+
 from database.database import (
     init_db,
     get_connection,
     insert_company,
     insert_signal,
     insert_program,
+    insert_founder,
     update_company,
+    update_company_stage,
 )
 
 PORTFOLIO_URL = "https://www.joinef.com/portfolio/"
@@ -272,6 +276,7 @@ def main():
                 updates["geography"] = c["geography"]
                 updates["city"] = c["city"]
             update_company(company_id, **updates)
+            update_company_stage(company_id, "Pre-seed", "Entrepreneur First", date.today().isoformat())
             existing_count += 1
         else:
             company_id = insert_company(
@@ -282,6 +287,8 @@ def main():
                 city=c["city"],
                 stage="Pre-seed",
                 heat_score=2,
+                stage_source="Entrepreneur First",
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 
@@ -303,6 +310,17 @@ def main():
             program_country=country_map.get(c["geography"], c["geography"]),
             cohort=c["year_founded"],
         )
+
+        # Insert founders
+        for f in c["founders"]:
+            if f.get("name"):
+                insert_founder(
+                    company_id=company_id,
+                    name=f["name"],
+                    title=f.get("role"),
+                    linkedin_url=f.get("linkedin") or None,
+                    source="Entrepreneur First",
+                )
 
         log(f"  {'NEW' if not existing else 'UPD'}  {c['name'][:30]:30s}  "
             f"{c['city']:8s}  {sector:12s}  "

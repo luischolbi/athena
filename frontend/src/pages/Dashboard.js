@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import TopBar from '../components/TopBar';
 import FilterBar from '../components/FilterBar';
+import StatsOverview from '../components/StatsOverview';
 import CompanyCard from '../components/CompanyCard';
 import Footer from '../components/Footer';
 import { fetchStats, fetchFilters, fetchSignals } from '../api';
@@ -31,8 +32,11 @@ export default function Dashboard() {
   const [filterOptions, setFilterOptions] = useState({});
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState('');
+  const [hideInactive, setHideInactive] = useState(true);
+  const [hideUnverified, setHideUnverified] = useState(true);
   const [companies, setCompanies] = useState([]);
   const [total, setTotal] = useState(0);
+  const [totalUnfiltered, setTotalUnfiltered] = useState(0);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -58,6 +62,8 @@ export default function Dashboard() {
       const data = await fetchSignals({
         ...filters,
         search: search || undefined,
+        hide_inactive: hideInactive || undefined,
+        hide_unverified: hideUnverified || undefined,
         limit: PAGE_SIZE,
         offset: newOffset,
       });
@@ -68,6 +74,7 @@ export default function Dashboard() {
         setExpandedId(null);
       }
       setTotal(data.total);
+      setTotalUnfiltered(data.total_unfiltered || data.total);
       setOffset(newOffset);
     } catch (err) {
       console.error('Failed to fetch:', err);
@@ -76,7 +83,7 @@ export default function Dashboard() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [filters, search]);
+  }, [filters, search, hideInactive, hideUnverified]);
 
   useEffect(() => {
     loadCompanies(0, false);
@@ -107,13 +114,20 @@ export default function Dashboard() {
     <div className="min-h-screen bg-athena-bg pt-14">
       <TopBar stats={stats} />
 
+      <StatsOverview stats={stats} />
+
       <FilterBar
         filters={filters}
         filterOptions={filterOptions}
         onFilterChange={handleFilterChange}
         total={total}
+        totalUnfiltered={totalUnfiltered}
         showing={companies.length}
         onSearchChange={setSearch}
+        hideInactive={hideInactive}
+        onHideInactiveChange={setHideInactive}
+        hideUnverified={hideUnverified}
+        onHideUnverifiedChange={setHideUnverified}
       />
 
       <main className="max-w-[1440px] mx-auto px-6 pt-5 pb-4">

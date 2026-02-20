@@ -43,6 +43,39 @@ def init_db():
     except sqlite3.OperationalError:
         cursor.execute("ALTER TABLE companies ADD COLUMN previous_heat_score INTEGER DEFAULT 1")
 
+    # Migration: add stage tracking columns
+    for col in ("stage_source", "stage_detected_date"):
+        try:
+            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
+        except sqlite3.OperationalError:
+            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} TEXT")
+
+    # Migration: add athena_score columns
+    for col, coltype in [("athena_score", "REAL"), ("athena_score_breakdown", "TEXT")]:
+        try:
+            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
+        except sqlite3.OperationalError:
+            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
+
+    # Backfill stage_detected_date and stage_source for existing data
+    cursor.execute("""
+        UPDATE companies SET
+            stage_detected_date = (
+                SELECT MIN(DATE(detected_at)) FROM signals
+                WHERE signals.company_id = companies.id
+            ),
+            stage_source = (
+                SELECT COALESCE(
+                    (SELECT program_name FROM programs
+                     WHERE programs.company_id = companies.id LIMIT 1),
+                    (SELECT source_name FROM signals
+                     WHERE signals.company_id = companies.id
+                     ORDER BY detected_at ASC LIMIT 1)
+                )
+            )
+        WHERE stage IS NOT NULL AND stage_detected_date IS NULL
+    """)
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS signals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,6 +88,29 @@ def init_db():
             metadata TEXT,
             detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (company_id) REFERENCES companies (id)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS universities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            country TEXT,
+            city TEXT,
+            rank INTEGER,
+            score INTEGER,
+            num_spinouts INTEGER,
+            total_funding TEXT,
+            sourcing_url TEXT,
+            secondary_urls TEXT,
+            page_type TEXT,
+            scraping_score REAL,
+            update_frequency TEXT,
+            scout_priority_score REAL,
+            ai_labs TEXT,
+            clubs TEXT,
+            primary_contact_email TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -72,6 +128,20 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS founders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            title TEXT,
+            linkedin_url TEXT,
+            email TEXT,
+            source TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (company_id) REFERENCES companies (id)
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -79,16 +149,18 @@ def init_db():
 # --- Companies ---
 
 def insert_company(name, description=None, sector=None, geography=None,
-                   city=None, website=None, stage=None, heat_score=1):
+                   city=None, website=None, stage=None, heat_score=1,
+                   stage_source=None, stage_detected_date=None):
     conn = get_connection()
     today = date.today().isoformat()
     cursor = conn.execute(
         """INSERT INTO companies
            (name, description, sector, geography, city, website, stage,
-            heat_score, first_detected, last_updated)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            heat_score, first_detected, last_updated,
+            stage_source, stage_detected_date)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (name, description, sector, geography, city, website, stage,
-         heat_score, today, today)
+         heat_score, today, today, stage_source, stage_detected_date)
     )
     company_id = cursor.lastrowid
     conn.commit()
@@ -127,6 +199,34 @@ def update_company(company_id, **fields):
     conn.execute(f"UPDATE companies SET {set_clause} WHERE id = ?", values)
     conn.commit()
     conn.close()
+
+
+def update_company_stage(company_id, stage, stage_source, stage_detected_date):
+    """Update stage only if the new source is more recent than existing.
+    Returns True if updated."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT stage_detected_date FROM companies WHERE id = ?",
+        (company_id,)
+    ).fetchone()
+    if not row:
+        conn.close()
+        return False
+    existing_date = row["stage_detected_date"]
+    if existing_date and stage_detected_date and existing_date >= stage_detected_date:
+        conn.close()
+        return False
+    conn.execute(
+        """UPDATE companies
+           SET stage = ?, stage_source = ?, stage_detected_date = ?,
+               last_updated = ?
+           WHERE id = ?""",
+        (stage, stage_source, stage_detected_date,
+         date.today().isoformat(), company_id)
+    )
+    conn.commit()
+    conn.close()
+    return True
 
 
 # --- Signals ---
@@ -182,6 +282,41 @@ def get_programs_for_company(company_id):
     conn = get_connection()
     rows = conn.execute(
         "SELECT * FROM programs WHERE company_id = ? ORDER BY detected_at DESC",
+        (company_id,)
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+# --- Founders ---
+
+def insert_founder(company_id, name, title=None, linkedin_url=None,
+                   email=None, source=None):
+    conn = get_connection()
+    # Skip if this exact founder already exists for this company
+    existing = conn.execute(
+        "SELECT id FROM founders WHERE company_id = ? AND LOWER(name) = LOWER(?)",
+        (company_id, name)
+    ).fetchone()
+    if existing:
+        conn.close()
+        return existing["id"]
+    cursor = conn.execute(
+        """INSERT INTO founders
+           (company_id, name, title, linkedin_url, email, source)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (company_id, name, title, linkedin_url, email, source)
+    )
+    founder_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return founder_id
+
+
+def get_founders_for_company(company_id):
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM founders WHERE company_id = ? ORDER BY id",
         (company_id,)
     ).fetchall()
     conn.close()

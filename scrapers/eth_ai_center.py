@@ -16,13 +16,17 @@ from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import date
+
 from database.database import (
     init_db,
     get_connection,
     insert_company,
     insert_signal,
     insert_program,
+    insert_founder,
     update_company,
+    update_company_stage,
 )
 
 PAGE_URL = "https://ai.ethz.ch/entrepreneurship/affiliated-startups.html"
@@ -49,6 +53,39 @@ def find_existing(name):
     return dict(row) if row else None
 
 
+def extract_founders_from_text(text):
+    """Extract founder names from prose like 'co-founded by X, Y, and Z' or 'founded by X'."""
+    founders = []
+    # Match patterns like "founded by Name1, Name2, and Name3" or "co-founded by Name1 and Name2"
+    pattern = r'(?:co-)?founded\s+by\s+(.+?)(?:\.|,\s*(?:the|who|it|a\b|in|at|this|they|with)|\s*$)'
+    match = re.search(pattern, text, re.IGNORECASE)
+    if not match:
+        return founders
+
+    names_str = match.group(1).strip()
+    # Split on ", " and " and " to get individual names
+    # Handle "A, B, and C" or "A and B" patterns
+    names_str = re.sub(r',?\s+and\s+', ', ', names_str)
+    parts = [n.strip() for n in names_str.split(',') if n.strip()]
+
+    for name in parts:
+        # A valid founder name should be 2+ words, start with uppercase, no weird chars
+        name = name.strip(' .')
+        words = name.split()
+        if len(words) < 2 or len(words) > 5:
+            continue
+        # Each word should start with uppercase (proper name)
+        if not all(w[0].isupper() for w in words if len(w) > 1):
+            continue
+        # Skip if it contains common non-name words
+        skip_words = {'the', 'a', 'an', 'in', 'at', 'of', 'for', 'with', 'from'}
+        if any(w.lower() in skip_words for w in words):
+            continue
+        founders.append(name)
+
+    return founders
+
+
 def parse_startup(wrapper):
     """Parse a single textimage__wrapper div into startup data.
 
@@ -67,6 +104,7 @@ def parse_startup(wrapper):
         "description": None,
         "affiliation_year": None,
         "affiliation_connection": None,
+        "founders": [],
     }
 
     # --- Company name and website ---
@@ -115,6 +153,10 @@ def parse_startup(wrapper):
         if desc:
             result["description"] = desc
             break
+
+    # --- Founders from description prose ---
+    if result["description"]:
+        result["founders"] = extract_founders_from_text(result["description"])
 
     # --- Affiliation Year (case-insensitive) ---
     match = re.search(r'affiliation\s+year:\s*(\d{4})', full_text, re.IGNORECASE)
@@ -183,6 +225,7 @@ def main():
             if existing.get("sector") in (None, "Other"):
                 updates["sector"] = "AI / ML"
             update_company(company_id, **updates)
+            update_company_stage(company_id, "Pre-seed", "ETH AI Center", date.today().isoformat())
             existing_count += 1
         else:
             company_id = insert_company(
@@ -194,6 +237,8 @@ def main():
                 website=s["website"],
                 stage="Pre-seed",
                 heat_score=2,
+                stage_source="ETH AI Center",
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 
@@ -215,9 +260,18 @@ def main():
             cohort=s["affiliation_year"],
         )
 
+        # Insert founders extracted from prose
+        for fname in s["founders"]:
+            insert_founder(
+                company_id=company_id,
+                name=fname,
+                source="ETH AI Center",
+            )
+
         log(f"  {'NEW' if not existing else 'UPD'}  {name[:40]:40s}  "
             f"year={s['affiliation_year'] or '?':4s}  "
-            f"{(s['affiliation_connection'] or '')[:30]}")
+            f"{(s['affiliation_connection'] or '')[:30]}"
+            f"{'  founders=' + ','.join(s['founders']) if s['founders'] else ''}")
 
     log(f"\nETH AI Center: Found {len(startups)} startups. "
         f"{new_count} new, {existing_count} already existed.")

@@ -1,0 +1,532 @@
+ATHENA — Freshness Report
+Generated: 2026-02-16
+======================================================================
+
+FRESHNESS SCORE DISTRIBUTION
+──────────────────────────────────────────────────
+  5:   4580  ( 12.0%)  Active web + fresh signal
+  4:      0  (  0.0%)  Active web + aging signal
+  3:      0  (  0.0%)  Active web + stale signal
+  2:  33647  ( 88.0%)  Dead/no web + recent signal
+  1:      0  (  0.0%)  Dead/no web + stale signal
+
+  Total: 38227
+
+WEBSITE STATUS (T1+T2 only)
+──────────────────────────────────────────────────
+  active         : 3938
+  redirect       : 2
+  dead           : 498
+  no_website     : 744
+
+  Stale companies (12+ months): 0
+
+DEAD WEBSITES (498 total)
+────────────────────────────────────────────────────────────────────────────────────────────────────
+      ID  Name                                 URL                                                 Status      Error
+  ──────  ───────────────────────────────────  ──────────────────────────────────────────────────  ──────────  ──────────────────────────────
+    3954  1715Labs                             https://www.1715labs.com/                           HTTP 404    Not Found
+    4504  1st Mile                             https://1stmile.dk/                                 HTTP 555    
+    1247  24Symbols                            http://24symbols.com                                timeout     The read operation timed out
+    3758  3dot                                 http://3dot.com                                     timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    1090  418sec                               http://418sec.com                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2047  ABILITY Switzerland AG               http://www.ability-switzerland.com                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7778  ADPHORUS TEKNOLOJİ ANONİM ŞİRKETİ    https://adphorus.com                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+     678  AI Retailer Systems                  https://airetailersystems.com                       timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4514  AML Christensen ApS                  https://amlchristensen.com/                         HTTP 555    
+    5979  ARTIAL                               https://artial.co                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5732  ARway                                https://arway.app                                   timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2572  Accelerated Materials                https://acceleratedmaterials.co.uk/                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4157  Action Potential Neurotechnology S.  https://apneurotech.it/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6992  AddBIO                               http://www.addbio.se                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1556  Adjust Medical SA                    http://www.adjust-medical.com                       timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2077  Aero41 SA                            http://www.aero41.ch                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3757  Afrostream                           http://afrostream.tv                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1743  Agrinorm AG                          http://www.agrinorm.ai                              HTTP 404    Not Found
+    5090  Aimars                               https://www.aimars.io/                              timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    4880  Aionite Captial AG                   http://aionite.ch                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+     671  Air-Cloud e                          http://aircloud.ai                                  HTTP 404    Not Found
+    1745  AirScale AG                          http://airscale.ch                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3776  Aklimate                             https://www.getaklimate.com/                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3529  Aldara                               https://aldara.com                                  timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1020  Alloy                                http://alloy.capital                                timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    6007  Alpha Exchange                       https://alpha-exchange.com                          timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+     661  AlpineAI                             https://alpineai.ch                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4973  Amnestix, Inc.(übernommen)           http://expedeon.com                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4517  Analog Devices                       https://www.analog.com                              timeout     The read operation timed out
+    4909  Anaveon AG                           https://anaveon.com/                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4404  Anokion                              https://www.anokion.com                             HTTP 404    Not Found
+    5908  Antares Health                       https://antares.health                              HTTP 404    Not Found
+    5736  Apparier                             https://apparier.com                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6349  Applica                              https://applica.ai                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4488  Aqua+Tech                            https://www.aquaplustech.ch                         HTTP 503    Service unavailable
+    2022  Araris Biotech AG                    https://www.ararisbiotech.com                       timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4310  Archinisis                           https://www.archinisis.ch                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3731  Arengu                               https://www.arengu.com                              HTTP 404    Not Found
+    2157  Arklem AI                            http://arklem.ai                                    HTTP 404    Not Found
+    4864  Arvin                                https://arvin.ch/                                   timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3943  Asymmetric Suzuki Reactions (Enanti  https://asymmetricsuzuki.co.uk/                     timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1568  BEO Therapeutics AG                  http://www.beotherapeutics.com                      HTTP 555    
+    6175  BIZZON                               https://agentcash.com                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4877  BOW IT&T GmbH                        http://kollabro.ch                                  timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4201  Bameo                                https://www.bameo.eu/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4531  Barrowa                              http://barrowa.com                                  HTTP 555    
+    1346  Bcomp AG                             http://www.bcomp.ch/                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5672  BeeInstant                           https://beeinstant.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5115  BetterChoice                         https://betterchoice.today                          HTTP 555    
+    5860  Big Fan                              https://bigfan.io                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4075  BioAnaLab (acquired by Millipore Co  https://www.merckmillipore.com/GB/en?bd=1           timeout     The read operation timed out
+    2051  Biognosys AG                         http://www.biognosys.com                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+   39551  Biped.ai                             https://www.biped.ai/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1769  BizTelligence AG                     http://www.biztelligence.com                        timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3785  Blink                                https://www.blinklastmile.com/en/                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5485  Blink Last Mile                      https://blinklastmile.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4879  Blockchain Presence                  http://blockchainpresenc                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2052  BlueWatt engineering Sàrl (acquired  http://bluewatt-eng.com                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5120  Boilr                                https://boilr.io                                    HTTP 404    Not Found
+     992  Bookend                              http://bookend.ai                                   HTTP 525    <none>
+    1258  Brainient                            http://brainient.com                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5122  Breyta                               https://breyta.io                                   timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    2079  Buddybroker AG (Eqipia)              http://www.buddybroker.com                          timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1361  CALCISCON AG                         http://www.calciscon.com                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1777  CASUS Technologies AG                http://www.casus.ch                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1045  CNC24                                http://cnc24.com                                    timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4564  CRMzone                              https://www.crmzone.dk/                             HTTP 555    
+    2080  CTsystems AG                         http://www.ct-systems.ch                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4908  CUTISS AG                            http://cutiss.swiss                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3867  Caeruleus Genomics                   https://caeruleus.bio/                              timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    3619  Camlist                              https://www.camlist.com                             timeout     The read operation timed out
+    7779  Campanja AB                          https://campanja.com                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1570  Capt'n Greenfin AG                   http://www.captngreenfin.ch                         timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4544  Caretag Surgical                     http://www.caretagsurgical.com/                     timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6294  Cashforce                            https://cashforce.com                               timeout     The read operation timed out
+    7012  Catrel / Phoniro Systems             http://www.phonirosystems.se                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4830  Cellutech                            http://cellutech.se                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7017  Chargestorm                          http://www.chargestorm.se                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1575  Cherry Checkout SA                   http://www.cherrycheckout.com                       timeout     The read operation timed out
+    3989  Circadian Therapeutics               https://www.circadiantherapeutics.com/              HTTP 502    Bad Gateway
+    4550  Cirqle ApS                           https://cirqle.org/                                 HTTP 555    
+    1174  Clause                               http://clause.io                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2162  CleanBoat                            http://www.clean-boat.ch                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1370  CleanGreens Solutions SA             http://www.cleangreens.ch                           HTTP 404    Not Found
+    1143  Clearago                             http://clearago.com                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7795  Cloudpipes Ltd                       https://www.cloudpipes.com                          HTTP 404    Not Found
+    4553  Cm Aqua                              https://cmaqua.dk/                                  HTTP 555    
+    5139  Coachendo                            https://coachendo.com                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2054  Coatchecker GmbH                     https://www.coatchecker.ch/                         timeout     Remote end closed connection without response
+    4875  Cobot Solutions                      http://cobotsolutions.ch                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4253  CodeDepot                            https://codedepot.ch                                HTTP 404    Not Found
+    3766  CodeStory                            https://aide.dev                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1241  Codeship                             http://codeship.com                                 HTTP 502    Bad Gateway
+    4554  Colding Consult                      http://colding.dk/                                  HTTP 555    
+    4287  Combo Solutions aka Vizcab           https://www.vizcab.io/accueil                       HTTP 404    Not Found
+    1251  Compilr                              http://compilr.com                                  timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2112  Conductive Skin (COSKIN)             https://ethz.ch/en/industry/entrepreneurship/find-  HTTP 404    Not Found
+    5143  Converta                             https://converta.ai                                 timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    4560  Corrosion Advice ApS                 https://corrosionadvice.dk/                         HTTP 555    
+    1253  Crashpadder                          http://crashpadder.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7023  Cruitify                             https://simplycruit.com                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5904  Curada                               https://thecurada.com                               HTTP 404    Not Found
+    4581  DFM                                  http://www.dfm.dk/                                  HTTP 555    
+     949  Dalton                               http://DaltonTX.com                                 HTTP 404    Not Found
+    4572  DanBots                              http://www.danbots.com/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4574  Danish Waste Solutions               http://www.danws.dk/                                HTTP 555    
+    2024  Darix Sarl                           https://www.darix.ch/                               timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5980  Data for Good                        https://data-for-good.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6200  DataSine                             https://datasine.com                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1210  DataSmoothie                         http://datasmoothie.com                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3744  Dataform                             https://dataform.co                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5664  Datapath.io                          https://datapath.io                                 timeout     The read operation timed out
+    7025  Dazoq                                http://www.dazoq.com                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6110  Deepflow AI                          https://deepflow.ai                                 HTTP 404    Not Found
+    4959  Delenex Therapeutics AG(übernommen)  http://cellmedica.com                               HTTP 404    Not Found
+    7026  Desquare                             https://www.desquare.se/                            HTTP 555    
+    4788  Dialog                               https://www.dialog-therapy.com/                     timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3871  Digital Epidemiology Services        https://www.linkedin.com/company/digital-epidemiol  HTTP 404    Not Found
+    7711  DraftPilot.ai                        https://info.lexoo.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4874  E-Venio                              http://e-venio.ch                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2165  EARDREAM                             https://eardream.ch/                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1594  ENANTIOS AG                          http://www.enantios.com                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4589  ERA Recycling Aps                    https://erarecycling.com/                           HTTP 555    
+    3613  Echoes HQ                            https://echoeshq.com                                HTTP 404    Not Found
+    3952  Edtopia                              https://www.edtopia.io/                             HTTP 404    Not Found
+    3747  Eduflow                              https://www.eduflow.com                             timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    4933  Electron Point Source Instuments Gm  http://eps-instruments.com                          timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+   39608  Embion Technologies                  https://www.embiontech.com                          timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1801  Embion Technologies SA               https://embiontech.com/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7434  Emission Twin                        https://www.emissiontwin.com/?utm_term=emission%20  timeout     'ascii' codec can't encode character '\xf6' in position 49: ordinal not in range
+    7035  Enbio                                http://enbio.se/                                    timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4289  Enoil Biotechnologies                https://enoilbioenergies.ch/                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6160  Entertainment Intelligence           https://ent-intell.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5164  Envar                                https://envar.se                                    timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5883  Envio                                https://helloenvio.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3987  EnzBond                              http://www.enzbond.com/                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4962  Epha.ch AG                           http://epha.ch                                      timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6905  Epishine                             http://epishine.se/                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5165  Equality Check                       https://equalitycheck.it                            HTTP 404    Not Found
+    2167  Equsave                              http://www.equsave.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5819  Esoteric                             https://esoteric.style                              timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    4592  Essential Robotics ApS               https://essential-robotics.com/                     HTTP 555    
+    2169  Everink                              http://everink.ch                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4594  Evewave ApS                          https://evewave.com/                                HTTP 404    Not Found
+    5167  Evyon                                https://evyon.com                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2726  Exactmer Limited                     http://www.exactmer.com                             timeout     The read operation timed out
+    2170  Excede                               https://www.excede.io/                              timeout     timed out
+   39645  Excellness Biotech                   https://www.excellness.com                          timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    1601  Excellness Biotech SA                http://www.excellness.com                           timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    4597  Expres2ion Biotechnologies           http://www.expres2ionbio.com/                       HTTP 555    
+    5168  Extro                                https://www.extro.uk/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4598  Eye-Go A/S                           http://eye-go.com/                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7044  FORAN Remote Sensing                 http://www.foran.se/sv/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1018  FRNZX                                http://frnzx.io                                     timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    2026  Faceshift AG                         http://www.faceshift.com                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5171  Falco                                https://www.falco.co/                               timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    6091  FanSifter                            https://fansifter.com                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3737  Fancy                                https://www.fancyapp.live/                          timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    5885  Faredirect                           https://fare.direct                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1249  Farmeron                             http://farmeron.com                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1311  Fashwell AG                          http://tech.fashwell.com                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5856  Feeder                               https://getfeeder.com                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4258  Fleeps                               https://www.pindex.ch                               HTTP 404    Not Found
+    1194  Fleksy                               http://fleksy.com                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7646  Flexdrive                            https://flexdrive.se                                HTTP 555    
+    1063  Flooz                                http://flooz.link                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5613  Fluffy                               http://survey-smiles.com/                           HTTP 502    Bad Gateway
+    4601  Fluidan                              https://fluidan.com/                                HTTP 555    
+    5183  Forelight.ai (ex-Ween)               https://forelight.ai                                HTTP 404    Not Found
+    5188  Fusedbone                            https://fusedbone.com/                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5189  Fusy.ai                              https://www.fusy.ai/                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3907  GTT Analytics                        http://www.gttanalytics.com/                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4988  Ganymed Pharmaceuticals AG(übernomm  http://ganymed-pharmaceuticals.com                  HTTP 502    Bad Gateway
+    7719  Gaspack                              https://www.gaspack.xyz                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5928  Genetrainer                          https://genetrainer.com                             timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    5192  Geniess                              https://geniess.io                                  timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    3684  GiveAway                             http://giveaway.mobi                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5198  Globout                              https://www.globout.app/                            HTTP 404    Not Found
+    2173  Gluckli.ch                           https://www.gluckli.ch                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3525  Gluetrail                            https://www.gluetrail.com                           timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    7047  Glycobond                            http://www.glycobond.com                            timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    5199  Gofigo                               https://gofigo.co                                   timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5200  Gomoto                               https://getgomoto.de                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5744  Good Audience                        https://goodaudience.com                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3770  GoodCourse                           https://www.goodcourse.co                           timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    5201  Goyaa                                https://www.goyaa.ai/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3771  Grai                                 https://www.grai.io                                 timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    7721  Grana                                https://www.grana.com                               HTTP 502    Bad Gateway
+    7621  Grand Pike Ab                        http://www.grandpike.com/                           HTTP 404    Not Found
+    4137  H-robotics                           https://h-robotics.com/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4629  HRperformance P/S                    https://www.hrperformance.dk/                       timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4621  Harald V. Lassen                     http://www.hvl.dk/site2/velkommen.html              HTTP 404    Not Found
+    3900  Hare Analytics                       https://hareanalytics.com/                          timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5878  Harp Health                          https://harphealthtech.com                          timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    1056  HelloFlow                            http://helloflow.io                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5206  HelloMentor                          https://hellomentor.nl/                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1818  Helvitek Labs SA                     https://helvitek.com/en/about-us/                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4169  HepaVue Dx                           https://hepavue.com/                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3781  Hera                                 https://hera.so                                     timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6073  HeyAxel                              https://heyaxel.com                                 timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    6165  Hollo                                https://hollo.io                                    HTTP 404    Not Found
+    2175  Horace.Health                        https://horace.health                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6017  Hormonious Flo                       https://hormoniousflo.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3882  Human Centric DD                     https://www.humancentricdd.com/                     timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5597  Iamus                                http://survey-smiles.com/                           HTTP 502    Bad Gateway
+    4450  Illusonic                            https://www.illusonic.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6340  Impala                               https://impala.travel                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5745  InFLOWS                              https://designflow.inflows-ai.com                   timeout     timed out
+   39693  InSituMetrix                         https://www.insitumetrix.com/notre-histoire-1       HTTP 404    Not Found
+    2177  InSituStreTech                       https://insitustretech.com/                         timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1826  Incrementech GmbH (Cataya)           https://www.cataya.ch                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5222  Infinit                              https://infinit.bio                                 timeout     timed out
+    1827  InfinityGen Sagl                     http://www.infinity-gen.com                         HTTP 500    Internal Server Error
+    5995  Influunt Systems                     https://influunt.ai                                 timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    3762  Infogami                             http://infogami.com                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2634  Inotec AMD                           http://www.inotecamd.com/                           timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    5919  Intuitivo                            https://en.intuitivo.pt                             HTTP 404    Not Found
+    6096  Intuos                               https://intuos.it                                   timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4873  Invasight AG                         http://invasight.com                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7056  Invisense                            http://www.invisense.com/                           timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    5229  Iodo                                 https://iodo.ai                                     HTTP 404    Not Found
+    6219  Iomob                                https://iomob.net                                   HTTP 503    Service Unavailable
+    1240  James Finance                        http://james.finance                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4293  Jarys                                https://jarys.ch/                                   HTTP 503    Service Unavailable
+    2585  JoltSynSor                           https://www.joltsynsor.com/                         HTTP 404    Not Found
+    3718  JustSpotted                          http://justspotted.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4457  Karmic                               https://www.karmic.ch                               HTTP 503    Service unavailable
+    5737  Kedeon                               https://kedeonsolutions.com                         timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2059  KeyLemon SA                          http://www.keylemon.com                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4651  Kompetencemægleren                   http://www.xn--kompetencemgleren-1rb.dk/om_kompete  timeout     The read operation timed out
+    7060  Kookiejar                            https://kookiejar.com/                              timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    4653  Kragelund Consulting                 http://www.kragelundconsulting.dk/                  timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    1630  LIBREC AG                            http://www.librec.com                               timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    1124  LUA                                  http://lua.work                                     timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    4321  Largo Films                          https://www.largofilms.ch                           timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4657  Lederskab                            http://lederskab.dk/                                HTTP 555    
+    5831  Legal Nodes                          https://legalnodes.org                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4883  LifeMatrix AG                        http://lifematrixtechnol                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1444  LifeMatrix Technologies AG           http://www.lifematrixtechnologies.com/en/           HTTP 404    Not Found
+    5259  Lifelong                             https://wearelifelong.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5793  Locker                               https://getlockersport.com                          timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4663  Logit IQ A/S                         http://www.logit-iq.com                             HTTP 555    
+    5261  Lokaalt                              https://lokaalt.se                                  timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7647  LongeVience                          https://ageviva.se                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3742  Look After My Bills                  http://www.lookaftermybills.com                     HTTP 410    Gone
+    6101  Lullaai                              https://lullaai.com                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4903  Luloplus GmbH                        http://mifruta.ch                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5265  Lunch.co                             https://lunch.co                                    HTTP 404    Not Found
+    7467  Lysells Security and Tech            https://lysellssecurityandtech.com                  HTTP 555    
+    5697  MCLedger                             https://mcledger.fr                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6078  MEDIjobs                             https://medijobs.ro                                 HTTP 500    Internal Server Error
+    2088  MIMEDIS AG                           http://www.mimedis.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4194  MIROS Technology                     https://miros.technology/                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4870  MUVON Therapeutics AG                http://muvon-therapeuti                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2028  Mabimmune AG (merged with Neurimmun  http://www.mabimmune.com                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3950  Macrophox                            https://macrophox.com/                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5267  Magic                                https://magicrefunds.com                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7648  Maptun Performance                   https://www.maptun.com/se/                          HTTP 404    Not Found
+    1856  Mathrix Education SA                 https://mathrix.fr/                                 HTTP 404    Not Found
+   39526  Maven Health                         https://www.mavenhealth.ch/en                       timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1857  Maven Health AG                      https://www.mavenhealth.ch/en                       timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5916  Mavuno Technologies                  https://mavuno.tech                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1637  MeduSoil SA                          https://www.medusoil.com/                           timeout     The read operation timed out
+   39591  Medusoil                             https://www.medusoil.com                            timeout     The read operation timed out
+    3784  MeetAnyway                           https://meetanyway.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5830  MeetFox                              https://meetfox.com                                 HTTP 404    Not Found
+    3793  Memo                                 https://sendmemo.app                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1860  MesenFlow Technologies Sàrl          http://www.mesenflow.com/                           timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3986  MetaBoards                           http://metaboards.tech/                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2087  Metaco SA                            https://metaco.com                                  timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    5277  Micurai                              https://micurai.com                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    7074  Millbyte                             https://millbyte.se/                                HTTP 404    Site Not Found
+    5279  Minosia                              https://minosia.com/                                timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    4438  Minsh                                https://www.minsh.net                               timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3939  MiroBio                              http://www.mirobio.com/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1862  Mithras Technology AG                https://mithras.tech/                               HTTP 500    Internal Server Error
+    5280  Mitigrate                            https://mitigrate.com                               HTTP 404    Not Found
+    6203  Miuros                               https://miuros.com                                  HTTP 404    Not Found
+    5282  Modulize                             https://modulize.io                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4995  Molecular Machines & Industries AG   http://molecular-mach                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3807  Multis                               https://multis.com/                                 HTTP 404    Not Found
+    3632  Mystic                               https://www.mystic.ai/                              timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    1882  NOVAGAN Sàrl                         http://www.novagan.com/                             timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    6000  NanoMatter                           https://nano-matter.com                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4382  Nanoga                               https://www.dnawatch.ch                             timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+   39592  Nanogence                            https://www.nanogence.ch                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4855  Navignostics AG                      http://navignostics.com                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1470  Nerai Bioscience AG                  http://www.nerai.bio                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2188  NeuroPAT                             https://www.irem.uzh.ch/en/biomedentrepreneurship/  HTTP 404    404
+    3786  Newslabs                             http://newslabs.com                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7083  Newton Nordic                        https://newtonnordic.com/                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5286  Nexro                                https://nexro.io/                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1031  Next Decade                          http://nextdecade.io                                timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    1877  Next Insights Sàrl                   https://nxsights.com/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1645  No-Touch Robotics GmbH               http://www.notouchrobotics.com                      timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1135  Nordigen                             http://nordigen.com                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4939  Nova Space Biotechnology GmbH        http://novaspacebiotech.ch                          timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+   39650  Novagan                              https://www.novagan.com                             timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+     621  NutriBuddy                           https://nutribuddy.ch                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6023  OBEY                                 https://obeyme.world                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2030  OBaris AG                            http://www.obaris.ch                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3917  OXDH                                 https://oxdh.health/                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5294  Oamly                                https://oamly.com                                   timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4697  Odeon                                https://odeon.dk/                                   HTTP 555    
+    5298  Off the Court                        https://offthecourt.co                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5300  Omma                                 https://www.omma.bio/                               timeout     The read operation timed out
+    4237  Ondefy                               https://www.ondefy.com/                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4869  One Up                               http://one-up.ch                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3730  Onfolk                               http://onfolk.com                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1187  Open Sensors                         http://opensensors.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1893  OpenDress GmbH (beawear.ai)          http://bewear.ch                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5301  OpenIAP                              https://openiap.io                                  HTTP 503    Service Unavailable
+    5767  Optimo                               https://optimo.so                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4699  Opus                                 http://www.opus1.dk/                                HTTP 410    Gone
+    3772  Ordinary Seafood                     https://www.ordinaryseafood.com/                    timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    4090  OxLoc                                https://innovation.ox.ac.uk/news/oxloc-enters-us-m  HTTP 404    Not Found
+    3994  Oxford Nanoimaging                   http://www.oxfordni.com/                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3965  Oxford Sustainable Fuels             http://osfuels.com/                                 HTTP 404    Not Found
+    3863  Oxomics                              https://www.oxomics.com/                            timeout     The read operation timed out
+    3983  Oxonomy                              http://oxonomy.com/                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4102  Oxxon Therapeutics Ltd (acquired by  https://www.oxfordbiomedica.co.uk/                  timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+   39623  PB&B                                 https://www.pbbtech.ch                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1493  PRECLIN Biosystems SA                http://www.preclinbiosystems.com                    timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    4713  PSV                                  https://psv.xyz/                                    HTTP 555    
+    5678  Palleter                             https://palleter.com                                HTTP 404    Not Found
+    1484  Palto Therapeutics AG                http://www.paltotx.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4954  PareQ AG(übernommen)                 http://pareq.com                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2092  Parking Solutions GmbH               http://www.parkit.ch                                timeout     <urlopen error [SSL: TLSV1_UNRECOGNIZED_NAME] tlsv1 unrecognized name (_ssl.c:10
+    1141  Parla                                http://myparla.com                                  timeout     <urlopen error [SSL: TLSV1_UNRECOGNIZED_NAME] tlsv1 unrecognized name (_ssl.c:10
+    4146  Peopleâ€™s infrastructure            https:// peopleinfra.ch                             timeout     URL can't contain control characters. ' peopleinfra.ch' (found at least ' ')
+    5319  PerPlant                             https://perplant.ai/en/                             HTTP 555    
+    5318  Perfana                              https://perfana.io/                                 HTTP 404    Not Found
+    2192  Phorest                              https://www.venturekick.ch/phorest-chemicals        HTTP 404    Not Found
+    1911  Phygularity                          http://www.Phygularity.com                          HTTP 404    Not Found
+    2594  Planetary Processing                 https://www.planetaryprocessing.io/                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2094  PlayfulVision Sarl                   https://www.secondspectrum.com/index.html           HTTP 400    Bad Request
+    3671  Plexus                               http://plexus.im                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4999  Polyphor AG                          http://polyphor.com                                 HTTP 502    Bad Gateway
+    1916  Precision Vine Sàrl                  http://www.precisonvine.com/                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4998  Prionics AG(übernommen)              http://thermofisher.com                             timeout     The read operation timed out
+    3764  Quary                                https://www.quary.dev                               HTTP 404    Not Found
+    5337  Quazy Foods                          https://www.quazyfoods.com/                         HTTP 404    Not Found
+    3484  Quivr                                https://www.quivr.app/                              timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    1918  Qvanteq AG                           http://www.qvanteq.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1919  Radian GmbH (rowcus.com)             https://www.rowcus.com/                             HTTP 404    Not Found
+    1664  RatioX sàrl                          http://www.ratiox.ch                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4860  Readney Labs                         http://readney.com                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1213  Reinfer                              http://reinfer.io                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4801  RentalSense                          http://rentalsense.se                               timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    5679  Reputize                             https://reputize.co                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2219  RheoCarti                            http://www.rheocarti.com                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5807  RisksessAML                          https://getraml.com                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2095  Roll2Go AG                           http://www.roll2go.ch                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5875  Roomkast                             https://roomkast.com                                HTTP 404    Not Found
+    2096  RosieReality GmbH                    https://www.rosiereality.ch/                        timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1104  Ryde                                 http://ryde.team                                    timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1931  SAMAWATT SA                          https://samawatt.com                                HTTP 404    Not Found
+    4718  SELMA Diagnostics                    http://www.selmadiagnostics.com                     HTTP 404    Not Found
+    4980  SILANA GmbH                          http://silana.ch                                    timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5783  SLAIT School                         https://slait.school                                HTTP 404    Not Found
+    5379  SOUS                                 https://creators.eatsous.com                        HTTP 404    Not Found
+    1965  SUNWELL Sàrl                         http://www.sunwell.tech                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3759  SalesSift                            https://salessift.com                               timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5349  Salesbeat                            https://salesbeat.co                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1062  Salesroom                            http://salesroom.com                                timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    3479  Saturn                               https://www.SaturnOS.com                            HTTP 404    Not Found
+    1932  Scailyte AG                          http://www.scailyte.com                             timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1933  Scientis Pharma SA                   http://www.scientispharma.ch                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3653  Scrimba                              https://scrimba.com                                 HTTP 404    File Not Found
+    1673  Scrona AG                            http://www.scrona.ch                                timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    7653  Second Try                           https://www.secondtry.se                            HTTP 503    Service Unavailable
+    3797  Secured                              https://secured.community                           timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5358  Semble                               https://semble.games                                HTTP 404    Not Found
+    4720  SenArch ApS                          https://senarch.net/                                HTTP 555    
+    6136  Sensible Object                      https://sensibleobject.com                          timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4432  Sensorscope                          https://www.sensorscope.ch                          HTTP 410    Gone
+    3873  SerenOx                              https://serenox.com/                                HTTP 503    Service Unavailable
+    1519  Shape Biopharmaceuticals AG          https://shapebiopharma.com                          timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5364  Shepherd                             https://meetshepherd.com                            timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    5836  Shopest                              https://shopestapp.com                              HTTP 404    Not Found
+    1674  SiMPLInext SA                        http://www.simplinext.com                           timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    4725  SiPhotonIC                           https://siphotonic.com/                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1945  Silentsys SAS                        http://www.silent-laser.com                         timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4953  Siltectra GmbH(ehemals Enexra Tools  http://siltectra.com                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4454  Singleton 3D                         https://www.singleton3d.com                         timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1120  Skew                                 http://skew.com                                     timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2068  Skope Magnetic Resonance Technologi  http://www.skope.ch                                 timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    3672  Slite                                https://slite.com/                                  HTTP 404    Not Found
+    4729  Smart Business Process Automation    https://smartrpa.com/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1676  SmartBreed GmbH                      http://www.smartbreed.ch                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5778  Smarter Human                        https://smarter-human.com                           timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    6045  SnapSwap                             https://snapswap.eu                                 timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    3782  SolarMente                           https://solarmente.es                               HTTP 404    Not Found
+    4496  Solaronix                            https://www.solaronix.ch                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5378  SourceOps                            https://sourceops.io                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1130  Speechly                             http://speechly.com                                 HTTP 404    Not Found
+    1958  Spirecut SA                          http://www.spirecut.com                             timeout     The read operation timed out
+    1527  Sport Components AG (milKit)         http://www.milkit.bike                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3980  SpyBiotech                           http://www.spybiotech.com/web/                      HTTP 404    Not Found
+    7781  Stamplay LTD.                        https://stamplay.com                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3765  Stitch Technologies                  https://www.stitch.tech                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5390  StocksFC                             https://stocksfc.com/                               timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2655  Storm Therapeutics                   http://www.stormtherapeutics.com/                   timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5686  StrikesApp                           https://trystrikes.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7804  Stupeflix SAS                        https://stupeflix.com                               timeout     <urlopen error [Errno 61] Connection refused>
+    4737  SulfiLogger A/S                      http://www.sulfilogger.com                          HTTP 555    
+   39574  Sunwell                              https://sunwell.tech                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5393  Supafin                              https://www.supafin.com/                            HTTP 404    Not Found
+    2603  Super-Sharp Space Systems            https://super-sharp.com/                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6028  SurPlusMap                           https://surplusmap.com                              HTTP 404    Not Found
+    1967  SurroundPower GmbH                   https://surroundpower.ch/                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5397  Sustie                               https://sustie.io                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6296  SwiftComply                          https://swiftcomply.io                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1969  Swiss Blockchain Technology GmbH     https://www.swiss-blockchain-technology.ch          timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1684  Swiss Ocean Tech AG                  http://www.swissoceantech.com                       timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4899  SwissAcademy GmbH                    http://swissacademy.ch                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4898  SwissProsthetics                     http://swissprosthetics.com                         timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+   39587  SwissSource                          https://www.swissource.com                          HTTP 404    Not Found
+    1972  SwissSource Sàrl                     http://www.swissource.com/                          HTTP 404    Not Found
+    4982  Swisstrace GmbH                      http://swisstrace.com                               timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+   39529  Synature                             https://www.synature.ch/en/home                     timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4059  TDeltaS                              http://www.tdeltas.com                              timeout     The read operation timed out
+    4754  TJ Management                        http://www.tj-management.dk/                        HTTP 555    
+    1693  TOSA swisstech SA                    https://www.tosa-swisstech.ch/en                    HTTP 404    Not Found
+    4741  TakeCHARGE                           https://takecharge.dk/                              HTTP 555    
+   39613  Technis                              https://www.mytechnis.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1228  Teleport                             http://teleport.org                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1535  Terapet SA                           http://www.terapet.ch                               timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    3795  The Supplant Company                 https://supplant.com                                timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7801  TheAmazeApp GmbH                     https://theamazeapp.com                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4200  Therame!                             https://besttherapyforme.com/                       timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4752  ThiaX                                http://www.thiax.com                                HTTP 503    Service Temporarily Unavailable
+    5663  Think Outside                        https://thinkoutside.no                             timeout     <urlopen error [SSL: TLSV1_UNRECOGNIZED_NAME] tlsv1 unrecognized name (_ssl.c:10
+    5409  Tidal Flow                           https://www.tidalflow.ai                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3738  Together Video Chat                  https://www.togethervideoapp.com/                   HTTP 500    Internal Server Error
+    1255  Totems                               http://totems.co                                    timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5415  TradeBay                             https://tradebay.co                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    6046  Trezeo                               https://trezeo.com                                  timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2072  Triplequote Sàrl                     https://www.triplequote.com/                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7574  UMV Dynamics AB                      http://KLadda:%20https://graceful-marigold-0de3be.  timeout     URL can't contain control characters. 'KLadda: https' (found at least ' ')
+    7541  Under 2022 förvärvades Debricked av  https://debricked.com/blog/debricked-now-part-of-m  HTTP 404    Not Found
+    3806  Unflow                               https://www.unflow.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4858  Vector BioPharma AG                  http://vectorbiopharma.com                          HTTP 404    Not Found
+    5427  Vega                                 https://www.myvega.io/                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2106  Veltist                              https://veltist.com/                                timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4866  VenturePole AG                       http://venturepole.com                              HTTP 503    Service Unavailable
+    2107  Versive                              http://www.versivewheels.com                        HTTP 404    Not Found
+    1994  ViRelieve Therapeutics SAS           http://www.virelieve.com                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5676  Vieweet                              https://vieweet.com                                 HTTP 404    Not Found
+    5758  Vimma                                https://vimma.ai                                    HTTP 404    Not Found
+    1704  Vir2sense GmbH                       http://www.vir2sense.com                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1705  Virtual Reality Learning GmbH        http://www.virtualreality-learning.com/             HTTP 404    Not Found
+    1140  Vitrolabs                            http://vitrolabsinc.com                             HTTP 404    Not Found
+    3721  Vizzly                               https://vizzly.co/                                  timeout     <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ss
+    5710  Waggle                               https://waggle.work                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5436  WattWorker                           https://wattworker.com                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3750  Wavy                                 http://downloadwavy.com                             HTTP 404    Not Found
+    4279  We Play Sport                        https://www.weplay.sport/                           timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1711  Winduction AG                        http://www.winduction.com                           timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1224  Winnow Solutions                     http://winnowsolutions.com                          timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    4820  Winteria                             http://winteria.com                                 HTTP 404    Not Found
+    7131  Wiotech                              http://www.culturebee.se                            timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5693  WizDish                              https://wizdish.com                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2002  YLAH AG                              http://www.ylah.ch                                  HTTP 501    Not Implemented
+    4040  Yasa Motors                          http://www.yasamotors.com/                          timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    4774  Yngvik ApS                           https://yngvik.com/                                 HTTP 410    Gone
+    7803  Your Superfoods BV                   https://yoursuper.com                               HTTP 404    Not Found
+    4888  ZEITline GmbH                        http://www.zeitline.ch                              timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    4775  Zemacon                              https://zemacon.com/                                HTTP 555    
+    5868  Zephframe                            https://zephframe.com                               HTTP 404    Not Found
+    6064  Zoi meet                             https://zoimeet.jp                                  timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5101  amply                                https://www.getamply.io/                            timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    6144  andMe                                https://andmeapp.com                                timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+    1353  biped robotics SA                    http://www.biped.ai                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5141  comoon.xyz / zinehub                 https://zinehub.xyz                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1579  compliant concept AG                 http://www.compliant-concept.ch                     timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    1376  condenZero AG                        https://condenzero.com                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2025  deepCDR Biologics AG                 http://www.deepcdr.com                              HTTP 404    Not Found
+    4588  ePower Motors Aps                    http://epower-technology.dk/                        timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5975  enzum                                https://enzum.com                                   HTTP 404    Not Found
+    1810  femtoG AG                            https://femtog.com/                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2213  goNEON                               http://goneon.city                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4459  i-Dent                               https://www.ident-surgical.com/                     timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    5887  idatase                              https://netlume.net                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    3773  ilumadata                            https://www.ilumadata.io/                           timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1831  inspire AG für mechatronische Produ  http://www.inspire.ethz.ch                          timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    7794  jobpal Ltd                           https://jobpal.ai                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5274  meerchat                             https://meerch.at/                                  HTTP 404    Not Found
+    4948  memocare AG                          http://memocare.com                                 timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1459  microPow AG                          http://www.micropow.ch                              timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    2061  modum.io AG                          https://modum.io/                                   timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    2186  naialabs                             http://www.naialabs.com                             HTTP 404    Not Found
+    5288  nolemon                              https://www.nolemon.io/                             timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    5341  randevu                              https://randevu.tech                                timeout     <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failur
+    1274  rentmineonline                       http://rentmineonline.com                           timeout     <urlopen error [Errno 8] nodename nor servname provided, or not known>
+    1514  sefit health GmbH                    http://www.sefit.ch                                 timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4947  sensiQol AG                          http://sensiqol.ch                                  timeout     <urlopen error _ssl.c:985: The handshake operation timed out>
+    4249  tracy.ai                             https://tracy.ai/                                   timeout     <urlopen error EOF occurred in violation of protocol (_ssl.c:1002)>
+
+
+REDIRECTED WEBSITES
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  2 websites redirect to a different URL
+  EVOLY Sàrl                           https://www.evolyenergy.com/              -> ?
+  Evoly                                https://www.evolyenergy.com/              -> ?

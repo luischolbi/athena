@@ -11,7 +11,7 @@ import re
 import sys
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 
 import requests
@@ -523,6 +523,8 @@ def save_hit(hit, geography, city, user_cache):
             city=city,
             sector=sector,
             stage="Unknown",
+            stage_source="HackerNews",
+            stage_detected_date=date.today().isoformat(),
         )
         is_new = True
 

@@ -8,11 +8,12 @@ Usage:
 import json
 import sys
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -36,6 +37,19 @@ def startup():
     init_db()
 
 
+class FounderCreate(BaseModel):
+    name: str
+    title: str
+    linkedin_url: Optional[str] = None
+    email: Optional[str] = None
+
+class FounderUpdate(BaseModel):
+    name: Optional[str] = None
+    title: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    email: Optional[str] = None
+
+
 # ── Helpers ──
 
 def _parse_metadata(raw):
@@ -46,6 +60,30 @@ def _parse_metadata(raw):
         return json.loads(raw)
     except (json.JSONDecodeError, TypeError):
         return {}
+
+
+def _format_stage_display(stage, stage_source, stage_detected_date):
+    """Format stage with age-based decay info."""
+    if not stage:
+        return stage, "current", None
+    if not stage_detected_date:
+        return stage, "current", None
+
+    try:
+        detected = datetime.strptime(stage_detected_date, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return stage, "current", None
+
+    age_days = (date.today() - detected).days
+    year = stage_detected_date[:4]
+
+    if age_days < 365:
+        source_suffix = f" \u00b7 {stage_source} {year}" if stage_source else ""
+        return f"{stage}{source_suffix}", "current", None
+    elif age_days < 730:
+        return f"{stage} (may have changed)", "stale", None
+    else:
+        return f"Unknown (last known: {stage}, {year})", "outdated", stage
 
 
 def _build_company_response(company_row, conn, include_breakdown=True):
@@ -65,6 +103,20 @@ def _build_company_response(company_row, conn, include_breakdown=True):
     layers = {s["signal_layer"] for s in signals}
     is_cross_layer = "curated" in layers and "realtime" in layers
 
+    stage_display, stage_confidence, _ = _format_stage_display(
+        company_row["stage"],
+        company_row["stage_source"],
+        company_row["stage_detected_date"],
+    )
+
+    # Count distinct sources for this company
+    source_count = conn.execute(
+        "SELECT COUNT(DISTINCT source_name) FROM signals WHERE company_id = ?",
+        (cid,),
+    ).fetchone()[0]
+
+    row_keys = company_row.keys()
+
     result = {
         "id": cid,
         "name": company_row["name"],
@@ -73,8 +125,17 @@ def _build_company_response(company_row, conn, include_breakdown=True):
         "geography": company_row["geography"],
         "city": company_row["city"],
         "stage": company_row["stage"],
+        "stage_display": stage_display,
+        "stage_confidence": stage_confidence,
+        "stage_source": company_row["stage_source"],
+        "stage_detected_date": company_row["stage_detected_date"],
         "website": company_row["website"],
-        "heat_score": company_row["heat_score"],
+        "athena_score": company_row["athena_score"] if "athena_score" in row_keys else None,
+        "heat_score": company_row["heat_score"],  # deprecated
+        "company_status": company_row["company_status"] if "company_status" in row_keys else "unknown",
+        "data_tier": company_row["data_tier"] if "data_tier" in row_keys else None,
+        "freshness_score": company_row["freshness_score"] if "freshness_score" in row_keys else None,
+        "source_count": source_count,
         "is_cross_layer": is_cross_layer,
         "first_detected": company_row["first_detected"],
         "last_updated": company_row["last_updated"],
@@ -100,10 +161,26 @@ def _build_company_response(company_row, conn, include_breakdown=True):
         ],
     }
 
+    # Founders
+    founders = conn.execute(
+        "SELECT id, name, title, linkedin_url FROM founders WHERE company_id = ? ORDER BY id",
+        (cid,),
+    ).fetchall()
+    result["founders"] = [
+        {
+            "id": f["id"],
+            "name": f["name"],
+            "title": f["title"],
+            "linkedin_url": f["linkedin_url"],
+        }
+        for f in founders
+    ]
+
     if include_breakdown:
         breakdown = get_score_breakdown(cid)
         result["score_breakdown"] = breakdown
-        result["rising"] = breakdown.get("rising", False)
+        result["priority"] = breakdown.get("priority", "low")
+        result["cohort"] = breakdown.get("cohort")
 
     return result
 
@@ -122,10 +199,13 @@ def list_signals(
     source: Optional[str] = Query(None, description="Filter by source_name"),
     sector: Optional[str] = Query(None, description="Filter by sector"),
     geography: Optional[str] = Query(None, description="Filter by geography"),
-    min_score: Optional[int] = Query(None, ge=1, le=10, description="Minimum heat score"),
+    min_score: Optional[float] = Query(None, ge=0, le=5, description="Minimum Athena Score"),
     stage: Optional[str] = Query(None, description="Filter by stage"),
     cohort_year: Optional[str] = Query(None, description="Filter by cohort year"),
     search: Optional[str] = Query(None, description="Search name/description"),
+    hide_inactive: Optional[bool] = Query(None, description="Hide inactive/unknown companies"),
+    hide_unverified: Optional[bool] = Query(None, description="Hide T3/unverified companies"),
+    data_tier: Optional[int] = Query(None, ge=1, le=3, description="Filter by data tier"),
     sort: Optional[str] = Query("score", description="score, date, or name"),
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
@@ -157,7 +237,7 @@ def list_signals(
         params.append(geography)
 
     if min_score:
-        where.append("c.heat_score >= ?")
+        where.append("c.athena_score >= ?")
         params.append(min_score)
 
     if stage:
@@ -178,12 +258,22 @@ def list_signals(
         term = f"%{search.lower()}%"
         params.extend([term, term])
 
+    if hide_inactive:
+        where.append("c.company_status = 'active'")
+
+    if hide_unverified:
+        where.append("c.data_tier IN (1, 2)")
+
+    if data_tier:
+        where.append("c.data_tier = ?")
+        params.append(data_tier)
+
     where_clause = (" WHERE " + " AND ".join(where)) if where else ""
 
     # Sort
     sort_map = {
-        "score": "c.heat_score DESC, c.name ASC",
-        "date": "c.last_updated DESC, c.heat_score DESC",
+        "score": "c.athena_score DESC, c.name ASC",
+        "date": "c.last_updated DESC, c.athena_score DESC",
         "name": "c.name ASC",
     }
     order = sort_map.get(sort, sort_map["score"])
@@ -197,10 +287,13 @@ def list_signals(
     rows = conn.execute(query, params + [limit, offset]).fetchall()
 
     results = [_build_company_response(row, conn) for row in rows]
+
+    total_unfiltered = conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0]
     conn.close()
 
     return {
         "total": total,
+        "total_unfiltered": total_unfiltered,
         "limit": limit,
         "offset": offset,
         "results": results,
@@ -259,19 +352,34 @@ def stats():
         """).fetchall()
     }
 
-    by_score = {
-        str(r[0]): r[1]
-        for r in conn.execute("""
-            SELECT heat_score, COUNT(*)
-            FROM companies GROUP BY heat_score ORDER BY heat_score
-        """).fetchall()
-    }
+    by_priority = {}
+    for label, low, high in [("high", 4.0, 5.1), ("investigate", 3.5, 4.0),
+                              ("radar", 3.0, 3.5), ("low", 0, 3.0)]:
+        cnt = conn.execute(
+            "SELECT COUNT(*) FROM companies WHERE athena_score >= ? AND athena_score < ?",
+            (low, high),
+        ).fetchone()[0]
+        by_priority[label] = cnt
 
     by_stage = {
         r[0]: r[1]
         for r in conn.execute("""
             SELECT COALESCE(stage, 'Unknown'), COUNT(*)
             FROM companies GROUP BY 1 ORDER BY 2 DESC
+        """).fetchall()
+    }
+
+    # Active companies (excluding unverified/tier3)
+    active_verified = conn.execute(
+        "SELECT COUNT(*) FROM companies WHERE data_tier IN (1, 2) AND company_status = 'active'"
+    ).fetchone()[0]
+
+    # By tier
+    by_tier = {
+        str(r[0]): r[1]
+        for r in conn.execute("""
+            SELECT COALESCE(data_tier, 0), COUNT(*)
+            FROM companies GROUP BY 1 ORDER BY 1
         """).fetchall()
     }
 
@@ -283,11 +391,13 @@ def stats():
         "new_this_week": new_this_week,
         "cross_layer_matches": cross_layer,
         "source_count": source_count,
+        "active_verified": active_verified,
         "by_source": by_source,
         "by_sector": by_sector,
         "by_geography": by_geography,
-        "by_score": by_score,
+        "by_priority": by_priority,
         "by_stage": by_stage,
+        "by_tier": by_tier,
     }
 
 
@@ -303,6 +413,86 @@ def get_company(company_id: int):
     result = _build_company_response(row, conn)
     conn.close()
     return result
+
+
+@app.post("/api/companies/{company_id}/founders")
+def create_founder(company_id: int, founder: FounderCreate):
+    conn = get_connection()
+    row = conn.execute("SELECT id FROM companies WHERE id = ?", (company_id,)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Company not found")
+    cursor = conn.execute(
+        "INSERT INTO founders (company_id, name, title, linkedin_url, email, source) VALUES (?, ?, ?, ?, ?, ?)",
+        (company_id, founder.name.strip(), founder.title.strip() if founder.title else None,
+         founder.linkedin_url.strip() if founder.linkedin_url else None,
+         founder.email.strip() if founder.email else None, "manual"),
+    )
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return {"id": new_id, "name": founder.name.strip(), "title": founder.title, "linkedin_url": founder.linkedin_url}
+
+
+@app.put("/api/founders/{founder_id}")
+def update_founder(founder_id: int, founder: FounderUpdate):
+    conn = get_connection()
+    existing = conn.execute("SELECT * FROM founders WHERE id = ?", (founder_id,)).fetchone()
+    if not existing:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Founder not found")
+    updates = {}
+    if founder.name is not None:
+        updates["name"] = founder.name.strip()
+    if founder.title is not None:
+        updates["title"] = founder.title.strip()
+    if founder.linkedin_url is not None:
+        updates["linkedin_url"] = founder.linkedin_url.strip() if founder.linkedin_url else None
+    if founder.email is not None:
+        updates["email"] = founder.email.strip() if founder.email else None
+    if updates:
+        set_clause = ", ".join(f"{k} = ?" for k in updates)
+        conn.execute(f"UPDATE founders SET {set_clause} WHERE id = ?", list(updates.values()) + [founder_id])
+        conn.commit()
+    row = conn.execute("SELECT id, name, title, linkedin_url FROM founders WHERE id = ?", (founder_id,)).fetchone()
+    conn.close()
+    return {"id": row["id"], "name": row["name"], "title": row["title"], "linkedin_url": row["linkedin_url"]}
+
+
+@app.delete("/api/founders/{founder_id}")
+def delete_founder(founder_id: int):
+    conn = get_connection()
+    existing = conn.execute("SELECT id FROM founders WHERE id = ?", (founder_id,)).fetchone()
+    if not existing:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Founder not found")
+    conn.execute("DELETE FROM founders WHERE id = ?", (founder_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@app.get("/api/top20")
+def top20():
+    """Return the top 20 highest-scoring companies with 2025/2026 cohort."""
+    conn = get_connection()
+    rows = conn.execute("""
+        SELECT DISTINCT c.* FROM companies c
+        JOIN programs p ON p.company_id = c.id
+        WHERE c.data_tier IN (1, 2)
+          AND (
+            p.cohort GLOB '*2025*' OR p.cohort GLOB '*2026*'
+            OR p.cohort LIKE '%W25' OR p.cohort LIKE '%S25'
+            OR p.cohort LIKE '%F25' OR p.cohort LIKE '%X25'
+            OR p.cohort LIKE '%W26' OR p.cohort LIKE '%S26'
+            OR p.cohort LIKE '%F26' OR p.cohort LIKE '%X26'
+          )
+        ORDER BY c.athena_score DESC, c.name ASC
+        LIMIT 20
+    """).fetchall()
+    results = [_build_company_response(row, conn) for row in rows]
+    conn.close()
+    return {"results": results}
 
 
 @app.get("/api/filters")

@@ -271,7 +271,7 @@ def find_cross_layer_matches():
     """
     conn = get_connection()
     rows = conn.execute("""
-        SELECT c.id, c.name, c.sector, c.geography, c.heat_score,
+        SELECT c.id, c.name, c.sector, c.geography, c.athena_score,
                GROUP_CONCAT(DISTINCT s.source_name) AS sources,
                GROUP_CONCAT(DISTINCT s.signal_layer) AS layers,
                COUNT(DISTINCT s.source_name) AS source_count
@@ -293,7 +293,7 @@ def find_cross_layer_matches():
             "name": r["name"],
             "sector": r["sector"],
             "geography": r["geography"],
-            "heat_score": r["heat_score"],
+            "athena_score": r["athena_score"],
             "sources": r["sources"],
             "signals": [dict(s) for s in sigs],
         })
@@ -351,26 +351,10 @@ def main():
         print("  (These emerge when a company appears in both an accelerator")
         print("   AND a real-time source like HackerNews or press.)")
 
-    # Phase 3: Recalculate scores
-    print(f"\n  Phase 3: Recalculating heat scores...")
+    # Phase 3: Recalculate Athena Scores
+    print(f"\n  Phase 3: Recalculating Athena Scores...")
     total = score_all_companies()
     print(f"  Scored {total} companies")
-
-    # Show updated distribution
-    conn = get_connection()
-    dist = conn.execute("""
-        SELECT heat_score, COUNT(*) AS cnt
-        FROM companies
-        GROUP BY heat_score
-        ORDER BY heat_score
-    """).fetchall()
-    conn.close()
-
-    print("\n  Updated Score Distribution:")
-    print(f"  {'Score':>7s}  {'Count':>6s}")
-    print(f"  {'─' * 7}  {'─' * 6}")
-    for row in dist:
-        print(f"  {row[0]:>7}  {row[1]:>6}")
 
     # Show cross-layer matches with score breakdowns
     if matches:
@@ -378,7 +362,7 @@ def main():
         print(f"  {'─' * 56}")
         for m in matches:
             bd = get_score_breakdown(m["id"])
-            print(f"\n  [{bd['total']}] {m['name']}")
+            print(f"\n  [{bd['total']:.1f}] {bd['priority']}  {m['name']}")
             for reason in bd["reasons"]:
                 print(f"      - {reason}")
 

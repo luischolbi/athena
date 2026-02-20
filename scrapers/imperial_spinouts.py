@@ -19,6 +19,8 @@ from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import date
+
 from database.database import (
     init_db,
     get_connection,
@@ -26,6 +28,7 @@ from database.database import (
     insert_signal,
     insert_program,
     update_company,
+    update_company_stage,
 )
 
 PAGE_URL = (
@@ -188,6 +191,7 @@ def main():
             if not existing.get("city"):
                 updates["city"] = "London"
             update_company(company_id, **updates)
+            update_company_stage(company_id, "Pre-seed", "Imperial College", date.today().isoformat())
             existing_count += 1
         else:
             company_id = insert_company(
@@ -199,6 +203,8 @@ def main():
                 website=data["website"],
                 stage="Pre-seed",
                 heat_score=2,
+                stage_source="Imperial College",
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 

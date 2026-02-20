@@ -26,6 +26,9 @@ export async function fetchSignals(params = {}) {
   if (params.cohort_year) query.cohort_year = params.cohort_year;
   if (params.search) query.search = params.search;
   if (params.sort) query.sort = params.sort;
+  if (params.hide_inactive) query.hide_inactive = true;
+  if (params.hide_unverified) query.hide_unverified = true;
+  if (params.data_tier) query.data_tier = params.data_tier;
   query.limit = params.limit || 30;
   query.offset = params.offset || 0;
 
@@ -35,5 +38,25 @@ export async function fetchSignals(params = {}) {
 
 export async function fetchCompany(id) {
   const { data } = await api.get(`/api/company/${id}`);
+  return data;
+}
+
+export async function fetchTop20() {
+  const { data } = await api.get('/api/top20');
+  return data;
+}
+
+export async function createFounder(companyId, founder) {
+  const { data } = await api.post(`/api/companies/${companyId}/founders`, founder);
+  return data;
+}
+
+export async function updateFounder(founderId, updates) {
+  const { data } = await api.put(`/api/founders/${founderId}`, updates);
+  return data;
+}
+
+export async function deleteFounder(founderId) {
+  const { data } = await api.delete(`/api/founders/${founderId}`);
   return data;
 }

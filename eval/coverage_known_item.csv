@@ -1,0 +1,247 @@
+source,company_name_on_website,found_in_db,matched_db_name
+Venture Kick,AEROTAIN AG,yes,AEROTAIN AG
+Venture Kick,BeeHelpful SA,yes,BeeHelpful SA
+Venture Kick,Distalmotion SA,yes,Distalmotion
+Venture Kick,InterAx Biotech AG,yes,InterAx Biotech AG
+Venture Kick,L.E.S.S. SA,yes,Less
+Venture Kick,MaxWell Biosystems AG,yes,MaxWell Biosystems AG
+Venture Kick,PharmaBiome AG,yes,PharmaBiome
+Venture Kick,Pregnolia AG,yes,Pregnolia AG
+Venture Kick,Sensars Neuroprosthetics Sàrl,yes,SensArs Neuroprosthetics
+Venture Kick,Vigilitech AG,yes,Vigilitech AG
+Venture Kick,Gamaya SA,yes,Gamaya
+Venture Kick,ONWARD Medical SA,yes,ONWARD Medical SA
+Venture Kick,Global Impact Finance SA (Monito),yes,Global Impact Finance SA (Monito)
+Venture Kick,recapp IT AG,yes,recapp IT AG
+Venture Kick,Swiss Wood Solutions AG,yes,Swiss Wood Solutions AG
+Venture Kick,Advanon AG,yes,Advanon AG
+Venture Kick,IRsweep AG,yes,IRsweep AG
+Venture Kick,Lunaphore Technologies SA,yes,Lunaphore Technologies
+Venture Kick,Versantis AG,yes,Versantis AG
+Venture Kick,Depsys,yes,Depsys
+Venture Kick,Insightness AG,yes,Insightness GmbH
+Venture Kick,Beekeeper AG,yes,Beekeeper AG
+Venture Kick,Inositec AG,yes,Inositec AG
+Venture Kick,Synple Chem AG,yes,Synple Chem AG
+Venture Kick,Sectors,no,
+EPFL,Andromede AI,yes,Andromede AI
+EPFL,Anharmonicity,yes,Anharmonicity
+EPFL,Badger Service SA,yes,Badger Service SA
+EPFL,Birds&Co.,yes,Birds&Co.
+EPFL,Châtaigne.ai,yes,ChÃ¢taigne.ai
+EPFL,EcoDeltaV,yes,EcoDeltaV
+EPFL,ElectroFueled,yes,ElectroFueled
+EPFL,Embodied ai,yes,Embodied ai
+EPFL,Haicker,yes,Haicker
+EPFL,Inlook.ai,yes,Inlook.ai
+EPFL,Inmunity Therapeutics,yes,Inmunity Therapeutics
+EPFL,Lemna Bio,yes,Lemna Bio
+EPFL,Neosens Diagnostics,yes,Neosens Diagnostics
+EPFL,Omniscient,yes,Omniscient
+EPFL,Performance Mouthguard,yes,Performance Mouthguard
+EPFL,Rhonexum,yes,Rhonexum
+EPFL,Scholé Inc.,yes,ScholÃ© Inc.
+EPFL,Timely Learning,yes,Timely Learning
+EPFL,Verretex,yes,Verretex
+EPFL,Xent.tech,yes,Xent.tech
+EPFL,Bioscibex,yes,Bioscibex
+EPFL,BrainQuant,yes,BrainQuant
+EPFL,CROWWD,yes,CROWWD
+EPFL,Cassio-P,yes,Cassio-P
+EPFL,50,no,
+ETH AI Center,Pavoot,no,
+ETH AI Center,AeonSelf,yes,AeonSelf
+ETH AI Center,Skaaltec,yes,Skaaltec
+ETH AI Center,UrbanEcho,yes,UrbanEcho
+ETH AI Center,Omnilex,yes,Omnilex
+ETH AI Center,Flexion Robotics,yes,Flexion Robotics
+ETH AI Center,NutriBuddy,yes,NutriBuddy
+ETH AI Center,Blooper,yes,Blooper
+ETH AI Center,CLIMADA Technologies,yes,CLIMADA Technologies
+ETH AI Center,NetFabric,yes,NetFabric
+ETH AI Center,Nextesy,yes,Nextesy
+ETH AI Center,CryptoSearchTools,yes,CryptoSearchTools
+ETH AI Center,Rapidata,yes,Rapidata
+ETH AI Center,UTHEREAL.ai,yes,UTHEREAL.ai
+ETH AI Center,RIVR,yes,RIVR
+ETH AI Center,ClimaLinks,yes,ClimaLinks
+ETH AI Center,Manukai,yes,Manukai
+ETH AI Center,Tethys Robotics,yes,Tethys Robotics
+ETH AI Center,Scanvio Medical,yes,Scanvio Medical
+ETH AI Center,AlpineAI,yes,AlpineAI
+ETH AI Center,MyoSwiss,yes,MyoSwiss
+ETH AI Center,Methodds,yes,Methodds
+ETH AI Center,Roboto AI,yes,Roboto AI
+ETH AI Center,Syntheticus,yes,Syntheticus
+ETH AI Center,Modulos vision,no,
+Oxford,Astut,yes,Astut
+Oxford,Mode Labs,yes,Mode Labs
+Oxford,Quantum Fabrix,yes,Quantum Fabrix
+Oxford,Porpoise Power,yes,Porpoise Power
+Oxford,Macrocosm,yes,Macrocosm
+Oxford,Granza Bio Corporation,yes,Granza Bio Corporation
+Oxford,Ascension Earth Resources,yes,Ascension Earth Resources
+Oxford,Oxford StemTech,yes,Oxford StemTech
+Oxford,Eterna Biologics,yes,Eterna Biologics
+Oxford,TheraCryf,yes,TheraCryf
+Oxford,NantBio,yes,NantBio
+Oxford,Vivid Dx (formerly Ramanomics),yes,Vivid Dx (formerly Ramanomics)
+Oxford,RQBio Covid,yes,RQBio Covid
+Oxford,Yellowstone Biosciences,yes,Yellowstone Biosciences
+Oxford,Kodiform Therapeutics,yes,Kodiform Therapeutics
+Oxford,FlexSR,yes,FlexSR
+Oxford,MatchBio,yes,MatchBio
+Oxford,Alveogene,yes,Alveogene
+Oxford,Veer Technologies,yes,Veer Technologies
+Oxford,SnowFox Discovery,yes,SnowFox Discovery
+Oxford,Ready to get in touch?,no,
+Y Combinator,Algolia,yes,Algolia
+Y Combinator,Heroic Labs,yes,Heroic Labs
+Y Combinator,"Estimote, Inc.",yes,"Estimote, Inc."
+Y Combinator,PowerMatrix,yes,PowerMatrix
+Y Combinator,ReJot,yes,ReJot
+Y Combinator,The Forecasting Company,yes,The Forecasting Company
+Y Combinator,CoCrafter,yes,CoCrafter
+Y Combinator,Lumen Payments,yes,Lumen Payments
+Y Combinator,Inconvo,yes,Inconvo
+Y Combinator,Atla,yes,Atla
+Y Combinator,rex.fit,yes,rex.fit
+Y Combinator,Versori,yes,Versori
+Y Combinator,Wondercraft,yes,Wondercraft
+Y Combinator,NewsCatcher,yes,NewsCatcher
+Y Combinator,Signatur Biosciences,yes,Signatur Biosciences
+Y Combinator,Fleek,yes,Fleek
+Y Combinator,SmartHelio,yes,SmartHelio
+Y Combinator,Happl,yes,Happl
+Y Combinator,Beau,yes,Beau
+Y Combinator,Sensible Biotechnologies,yes,Sensible Biotechnologies
+Y Combinator,Adaptyv,yes,Adaptyv
+Y Combinator,Malloc Inc,yes,Malloc Inc
+Y Combinator,Planet A Foods,yes,Planet A Foods
+Y Combinator,Camlist,yes,Camlist
+Y Combinator,Routine,yes,Routine
+Techstars,Lifebit Biotech,yes,Lifebit Biotech
+Techstars,Strategic Blue,yes,Strategic Blue
+Techstars,Overstory,yes,Overstory
+Techstars,Applica,yes,Applica
+Techstars,Blink,yes,Blink
+Techstars,Ravelin Technology,yes,Ravelin Technology
+Techstars,Cuvva,yes,Cuvva
+Techstars,Hydro Wind Energy,yes,Hydro Wind Energy
+Techstars,Stockly,yes,Stockly
+Techstars,Ultimate.ai,yes,Ultimate.ai
+Techstars,Circuit,yes,Circuit
+Techstars,NATIX,yes,NATIX
+Techstars,Vector.ai,yes,Vector.ai
+Techstars,Impala,yes,Impala
+Techstars,Sensei,yes,Sensei
+Techstars,Shieldpay,yes,Shieldpay
+Techstars,Everledger,yes,Everledger
+Techstars,Cledara,yes,Cledara
+Techstars,Yaspa,yes,Yaspa
+Techstars,Hackajob,yes,Hackajob
+Techstars,Endel,yes,Endel
+Techstars,Wakeo,yes,Wakeo
+Techstars,Eversport,yes,Eversport
+Techstars,Bokio,yes,Bokio
+Techstars,Seldon,yes,Seldon
+Antler,Aerial Tools,yes,Aerial Tools
+Antler,Earth Miles,yes,Earth Miles
+Antler,Jade Hosting,yes,Jade Hosting
+Antler,OpenIAP,yes,OpenIAP
+Antler,Aivot Labs,yes,Aivot Labs
+Antler,Nvelop,yes,Nvelop
+Antler,Auxicare,yes,Auxicare
+Antler,Loewi,yes,Loewi
+Antler,WeatherMind,yes,WeatherMind
+Antler,Aimars,yes,Aimars
+Antler,comoon.xyz / zinehub,yes,comoon.xyz / zinehub
+Antler,family.cards,yes,family.cards
+Antler,Goyaa,yes,Goyaa
+Antler,Jobreel,yes,Jobreel
+Antler,Netbird,yes,Netbird
+Antler,Physikit,yes,Physikit
+Antler,randevu,yes,randevu
+Antler,Spoons,yes,Spoons
+Antler,Abel Studios,yes,Abel Studios
+Antler,Indonesia,no,
+Antler,Aesty,no,
+Antler,Agrigate,no,
+Antler,Airalo,no,
+Antler,Alchemyst AI,yes,Alchemyst AI
+Antler,AlphaShine,no,
+Seedcamp,Sorare,yes,Sorare
+Seedcamp,La Fraise Pro,yes,La Fraise Pro
+Seedcamp,Source.dev,yes,Source.dev
+Seedcamp,Freqens,yes,Freqens
+Seedcamp,Apoha,yes,Apoha
+Seedcamp,RunWhen,yes,RunWhen
+Seedcamp,Spotlock,yes,Spotlock
+Seedcamp,Rasayel,yes,Rasayel
+Seedcamp,Rodeo,yes,Rodeo
+Seedcamp,GDevelop,yes,GDevelop
+Seedcamp,Surfboard,yes,Surfboard
+Seedcamp,Rosita,yes,Rosita
+Seedcamp,QuestDB,yes,QuestDB
+Seedcamp,kitch,yes,kitch
+Seedcamp,Orbital,yes,Orbital
+Seedcamp,Ezra,yes,Ezra
+Seedcamp,Harbr,yes,Harbr
+Seedcamp,Zamna,yes,Zamna
+Seedcamp,Reposit,yes,Reposit
+Seedcamp,Much Better Adventures,yes,Much Better Adventures
+Seedcamp,Traderion,yes,Traderion
+Seedcamp,Marcopolo Learning,yes,Marcopolo Learning
+Seedcamp,ShareLaTex,yes,ShareLaTex
+Seedcamp,Qminder,yes,Qminder
+Seedcamp,Patients Know Best,yes,Patients Know Best
+Entrepreneur First,Cleo,yes,Cleo
+Entrepreneur First,PolyAI,yes,PolyAI
+Entrepreneur First,Accurx,yes,Accurx
+Entrepreneur First,Spore.Bio,yes,Spore.Bio
+Entrepreneur First,Permutive,yes,Permutive
+Entrepreneur First,Ochre Bio,yes,Ochre Bio
+Entrepreneur First,Open Cosmos,yes,Open Cosmos
+Entrepreneur First,Gensyn,yes,Gensyn
+Entrepreneur First,Qantev,yes,Qantev
+Entrepreneur First,Omnea,yes,Omnea
+Entrepreneur First,Genomines,yes,Genomines
+Entrepreneur First,Mimica,yes,Mimica
+Entrepreneur First,Scarlet,yes,Scarlet
+Entrepreneur First,Unitary,yes,Unitary
+Entrepreneur First,Hadean,yes,Hadean
+Entrepreneur First,nPlan,yes,nPlan
+Entrepreneur First,Finni Health,no,
+Entrepreneur First,Genie AI,yes,Genie AI
+Entrepreneur First,Atomionics,no,
+Entrepreneur First,Faircraft,yes,Faircraft
+Entrepreneur First,Merkle Science,no,
+Entrepreneur First,Magdrive,yes,Magdrive
+Entrepreneur First,zeroheight,yes,zeroheight
+Entrepreneur First,Converge,yes,Converge
+Entrepreneur First,Tuza,yes,Tuza
+Imperial,About:Energy Limited,yes,About:Energy Limited
+Imperial,Accunea Ltd.,yes,Accunea Ltd.
+Imperial,Asep Healthcare Limited,yes,Asep Healthcare Limited
+Imperial,Bioataraxis Ltd,yes,Bioataraxis Ltd
+Imperial,Brilliant Dyes Ltd,yes,Brilliant Dyes Ltd
+Imperial,Codeacq Ltd,yes,Codeacq Ltd
+Imperial,Deltadot Limited,yes,Deltadot Limited
+Imperial,Dosium Holdings Limited,yes,Dosium Holdings Limited
+Imperial,Embed Biotech Limited,yes,Embed Biotech Limited
+Imperial,Enacuity Limited,yes,Enacuity Limited
+Imperial,Glioquell Limited,yes,Glioquell Limited
+Imperial,Medusa Pharmaceuticals Ltd,yes,Medusa Pharmaceuticals Ltd
+Imperial,Mint Neurotechnologies Ltd,yes,Mint Neurotechnologies Ltd
+Imperial,Monolith AI Limited,yes,Monolith AI
+Imperial,Neubond,yes,Neubond
+Imperial,Nuclearmedix Limited,yes,Nuclearmedix Limited
+Imperial,Precision Cardiovascular Ltd,yes,Precision Cardiovascular Ltd
+Imperial,Quaisr Limited,yes,Quaisr Limited
+Imperial,RFC Power Limited,yes,RFC Power Limited
+Imperial,Satisfed Limited,yes,Satisfed Limited
+Imperial,Signatur Biosciences Inc.,yes,Signatur Biosciences
+Imperial,Smart Surgical Appliances Limited,yes,Smart Surgical Appliances Limited
+Imperial,Solveteq Ltd,yes,Solveteq Ltd
+Imperial,Sub Salt Solutions Limited,yes,Sub Salt Solutions Limited
+Imperial,Tympa Health Technologies Limited,yes,Tympa Health Technologies

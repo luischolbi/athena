@@ -15,6 +15,7 @@ import sys
 import os
 import time
 import xml.etree.ElementTree as ET
+from datetime import date
 from urllib.parse import urlparse
 
 import requests
@@ -448,6 +449,8 @@ def main():
                 city=p["city"],
                 stage="Unknown",
                 heat_score=1,
+                stage_source="ProductHunt",
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 

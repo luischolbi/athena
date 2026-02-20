@@ -17,6 +17,8 @@ from scrapers import fetch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import date
+
 from database.database import (
     init_db,
     get_connection,
@@ -24,6 +26,7 @@ from database.database import (
     insert_signal,
     insert_program,
     update_company,
+    update_company_stage,
 )
 
 PAGE_URL = "https://seedcamp.com/our-companies/"
@@ -192,6 +195,7 @@ def main():
             if existing.get("sector") in (None, "Other") and data["sector"] != "Other":
                 updates["sector"] = data["sector"]
             update_company(company_id, **updates)
+            update_company_stage(company_id, "Seed", "Seedcamp", date.today().isoformat())
             existing_count += 1
         else:
             company_id = insert_company(
@@ -202,6 +206,8 @@ def main():
                 website=data["website"],
                 stage="Seed",
                 heat_score=2,
+                stage_source="Seedcamp",
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 

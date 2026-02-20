@@ -18,6 +18,8 @@ from bs4 import BeautifulSoup
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import date
+
 from database.database import (
     init_db,
     get_connection,
@@ -25,6 +27,7 @@ from database.database import (
     insert_signal,
     insert_program,
     update_company,
+    update_company_stage,
 )
 
 BASE_URL = "https://www.venturekick.ch"
@@ -212,6 +215,7 @@ def fetch_profile(profile_url):
         "funding_amount": None,
         "company_stage": "Grant only",
         "description": None,
+        "founded_year": None,
     }
 
     # --- Extract structured data from HTML comments in main-col ---
@@ -268,6 +272,12 @@ def fetch_profile(profile_url):
             match = re.search(r'Headquarter:\s*(.+?)(?:\n|$)', text)
             if match:
                 result["city"] = match.group(1).strip()
+
+    # --- Incorporation year from profile page text ---
+    page_text = soup.get_text()
+    inc_match = re.search(r'Incorporated:\s*\d{2}\.\d{2}\.(\d{4})', page_text)
+    if inc_match:
+        result["founded_year"] = inc_match.group(1)
 
     return result
 
@@ -356,6 +366,11 @@ def main():
             if existing.get("geography") in (None, "Unknown"):
                 updates["geography"] = "Switzerland"
             update_company(company_id, **updates)
+            stage = profile["company_stage"]
+            if stage and stage != "Unknown":
+                changed = update_company_stage(company_id, stage, f"Venture Kick {profile.get('vk_stage', '')}".strip(), date.today().isoformat())
+                if changed and existing.get("stage") and existing["stage"] != stage:
+                    pass  # stage updated by cross-reference
             existing_count += 1
         else:
             company_id = insert_company(
@@ -367,6 +382,8 @@ def main():
                 website=profile["website"],
                 stage=profile["company_stage"],
                 heat_score=2,
+                stage_source=f"Venture Kick {profile.get('vk_stage', '')}".strip(),
+                stage_detected_date=date.today().isoformat(),
             )
             new_count += 1
 
@@ -387,12 +404,14 @@ def main():
 
         # Add program entry
         if profile["vk_stage"]:
+            # Cohort: use founded year if available, otherwise just stage
+            vk_cohort = profile.get("founded_year") or profile["vk_stage"]
             insert_program(
                 company_id=company_id,
                 program_name="Venture Kick",
                 program_type="Grant",
                 program_country="Switzerland",
-                cohort=profile["vk_stage"],
+                cohort=vk_cohort,
                 funding_amount=profile["funding_amount"],
             )
 
