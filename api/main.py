@@ -11,8 +11,10 @@ import os
 from datetime import datetime, date, timedelta
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query, Body
+from fastapi import FastAPI, HTTPException, Query, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -187,9 +189,9 @@ def _build_company_response(company_row, conn, include_breakdown=True):
 
 # ── Endpoints ──
 
-@app.get("/")
-def root():
-    """Health check — must respond instantly for Render deploy."""
+@app.get("/api/health")
+def health():
+    """Health check endpoint."""
     return {"status": "ok", "name": "Athena API", "version": "1.0"}
 
 
@@ -554,3 +556,25 @@ def filters():
         "programs": programs,
         "cohort_years": cohort_years,
     }
+
+
+# ── Serve React frontend build ──
+
+FRONTEND_BUILD = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "frontend", "build",
+)
+
+if os.path.isdir(FRONTEND_BUILD):
+    # Serve static assets (JS, CSS, images)
+    app.mount("/static", StaticFiles(directory=os.path.join(FRONTEND_BUILD, "static")), name="static")
+
+    @app.get("/{full_path:path}")
+    async def serve_frontend(request: Request, full_path: str):
+        """Serve React app for any non-API route (SPA client-side routing)."""
+        # Try to serve the exact file first (favicon.ico, manifest.json, etc.)
+        file_path = os.path.join(FRONTEND_BUILD, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        # Fall back to index.html for SPA routing
+        return FileResponse(os.path.join(FRONTEND_BUILD, "index.html"))

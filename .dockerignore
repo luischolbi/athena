@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.env
+node_modules
+frontend/node_modules
+frontend/build
+venv
+.venv
+cloudflared
+cloudflared.tgz
+eval/
+data/
+*.md
+.DS_Store
