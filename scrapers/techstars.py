@@ -31,7 +31,7 @@ from database.database import (
 )
 
 API_URL = "https://8gbms7c94riane0lp-1.a1.typesense.net/collections/companies/documents/search"
-API_KEY = "REDACTED_TECHSTARS_KEY"
+API_KEY = os.environ.get("TECHSTARS_API_KEY", "")
 
 # Map Techstars industry verticals to Athena sectors
 SECTOR_MAP = {
