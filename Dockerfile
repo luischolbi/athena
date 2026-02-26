@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Frontend build
 COPY frontend/package.json frontend/package-lock.json frontend/
-RUN cd frontend && npm ci --production=false
+RUN cd frontend && npm install
 COPY frontend/ frontend/
 RUN cd frontend && npm run build
 
