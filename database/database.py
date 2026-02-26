@@ -37,45 +37,6 @@ def init_db():
         )
     """)
 
-    # Migration: add previous_heat_score if missing (existing DBs)
-    try:
-        cursor.execute("SELECT previous_heat_score FROM companies LIMIT 1")
-    except sqlite3.OperationalError:
-        cursor.execute("ALTER TABLE companies ADD COLUMN previous_heat_score INTEGER DEFAULT 1")
-
-    # Migration: add stage tracking columns
-    for col in ("stage_source", "stage_detected_date"):
-        try:
-            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
-        except sqlite3.OperationalError:
-            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} TEXT")
-
-    # Migration: add athena_score columns
-    for col, coltype in [("athena_score", "REAL"), ("athena_score_breakdown", "TEXT")]:
-        try:
-            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
-        except sqlite3.OperationalError:
-            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
-
-    # Backfill stage_detected_date and stage_source for existing data
-    cursor.execute("""
-        UPDATE companies SET
-            stage_detected_date = (
-                SELECT MIN(DATE(detected_at)) FROM signals
-                WHERE signals.company_id = companies.id
-            ),
-            stage_source = (
-                SELECT COALESCE(
-                    (SELECT program_name FROM programs
-                     WHERE programs.company_id = companies.id LIMIT 1),
-                    (SELECT source_name FROM signals
-                     WHERE signals.company_id = companies.id
-                     ORDER BY detected_at ASC LIMIT 1)
-                )
-            )
-        WHERE stage IS NOT NULL AND stage_detected_date IS NULL
-    """)
-
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS signals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -140,6 +101,45 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (company_id) REFERENCES companies (id)
         )
+    """)
+
+    # Migration: add previous_heat_score if missing (existing DBs)
+    try:
+        cursor.execute("SELECT previous_heat_score FROM companies LIMIT 1")
+    except sqlite3.OperationalError:
+        cursor.execute("ALTER TABLE companies ADD COLUMN previous_heat_score INTEGER DEFAULT 1")
+
+    # Migration: add stage tracking columns
+    for col in ("stage_source", "stage_detected_date"):
+        try:
+            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
+        except sqlite3.OperationalError:
+            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} TEXT")
+
+    # Migration: add athena_score columns
+    for col, coltype in [("athena_score", "REAL"), ("athena_score_breakdown", "TEXT")]:
+        try:
+            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
+        except sqlite3.OperationalError:
+            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
+
+    # Backfill stage_detected_date and stage_source for existing data
+    cursor.execute("""
+        UPDATE companies SET
+            stage_detected_date = (
+                SELECT MIN(DATE(detected_at)) FROM signals
+                WHERE signals.company_id = companies.id
+            ),
+            stage_source = (
+                SELECT COALESCE(
+                    (SELECT program_name FROM programs
+                     WHERE programs.company_id = companies.id LIMIT 1),
+                    (SELECT source_name FROM signals
+                     WHERE signals.company_id = companies.id
+                     ORDER BY detected_at ASC LIMIT 1)
+                )
+            )
+        WHERE stage IS NOT NULL AND stage_detected_date IS NULL
     """)
 
     conn.commit()
