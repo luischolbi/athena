@@ -112,63 +112,26 @@ export default function Dashboard() {
   async function handleExport() {
     setExporting(true);
     try {
-      // Fetch all filtered companies (paginate in batches of 500)
-      const allResults = [];
-      let exportOffset = 0;
-      while (true) {
-        const data = await fetchSignals({
-          ...filters,
-          search: search || undefined,
-          hide_inactive: hideInactive || undefined,
-          hide_unverified: hideUnverified || undefined,
-          limit: 500,
-          offset: exportOffset,
-        });
-        allResults.push(...data.results);
-        if (allResults.length >= data.total) break;
-        exportOffset += 500;
-      }
+      const params = new URLSearchParams();
+      if (filters.program) params.set('program', filters.program);
+      if (filters.sector) params.set('sector', filters.sector);
+      if (filters.geography) params.set('geography', filters.geography);
+      if (filters.stage) params.set('stage', filters.stage);
+      if (filters.min_score) params.set('min_score', filters.min_score);
+      if (filters.cohort_year) params.set('cohort_year', filters.cohort_year);
+      if (filters.data_tier) params.set('data_tier', filters.data_tier);
+      if (search) params.set('search', search);
+      if (hideInactive) params.set('hide_inactive', 'true');
+      if (hideUnverified) params.set('hide_unverified', 'true');
 
-      // Build CSV
-      const csvEscape = (val) => {
-        if (val == null) return '';
-        const s = String(val);
-        if (s.includes(',') || s.includes('"') || s.includes('\n')) {
-          return '"' + s.replace(/"/g, '""') + '"';
-        }
-        return s;
-      };
-
-      const headers = ['Company Name', 'Website', 'Athena Score', 'Sector', 'Geography', 'City', 'Source', 'Cohort Year', 'Stage', 'Tier'];
-      const rows = allResults.map((c) => {
-        const source = c.signals && c.signals.length > 0 ? c.signals[0].source_name : '';
-        const cohort = c.programs && c.programs.length > 0 ? c.programs[0].cohort : '';
-        const tierLabel = { 1: 'Curated', 2: 'Standard', 3: 'Discovery' }[c.data_tier] || '';
-        return [
-          c.name,
-          c.website || '',
-          c.athena_score != null ? c.athena_score.toFixed(1) : '',
-          c.sector || '',
-          c.geography || '',
-          c.city || '',
-          source,
-          cohort,
-          c.stage || '',
-          tierLabel,
-        ].map(csvEscape).join(',');
-      });
-
-      const csv = [headers.join(','), ...rows].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
+      const baseUrl = process.env.REACT_APP_API_URL || '';
+      const url = `${baseUrl}/api/export?${params.toString()}`;
       const a = document.createElement('a');
       a.href = url;
-      a.download = `athena-export-${new Date().toISOString().slice(0, 10)}.csv`;
       a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
       console.error('Export failed:', err);
     } finally {

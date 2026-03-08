@@ -11,10 +11,13 @@ import os
 from datetime import datetime, date, timedelta
 from typing import Optional
 
+import csv
+import io
+
 from fastapi import FastAPI, HTTPException, Query, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -300,6 +303,100 @@ def list_signals(
         "offset": offset,
         "results": results,
     }
+
+
+@app.get("/api/export")
+def export_csv(
+    program: Optional[str] = Query(None),
+    source: Optional[str] = Query(None),
+    sector: Optional[str] = Query(None),
+    geography: Optional[str] = Query(None),
+    min_score: Optional[float] = Query(None, ge=0, le=5),
+    stage: Optional[str] = Query(None),
+    cohort_year: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    hide_inactive: Optional[bool] = Query(None),
+    hide_unverified: Optional[bool] = Query(None),
+    data_tier: Optional[int] = Query(None, ge=1, le=3),
+):
+    conn = get_connection()
+
+    where = []
+    params = []
+
+    if program:
+        where.append("c.id IN (SELECT company_id FROM programs WHERE program_name = ?)")
+        params.append(program)
+    if source:
+        where.append("c.id IN (SELECT company_id FROM signals WHERE source_name = ?)")
+        params.append(source)
+    if sector:
+        where.append("c.sector = ?")
+        params.append(sector)
+    if geography:
+        where.append("c.geography = ?")
+        params.append(geography)
+    if min_score:
+        where.append("c.athena_score >= ?")
+        params.append(min_score)
+    if stage:
+        where.append("c.stage = ?")
+        params.append(stage)
+    if cohort_year:
+        where.append("c.id IN (SELECT company_id FROM programs WHERE cohort LIKE ?)")
+        params.append(f"%{cohort_year}%")
+    if search:
+        where.append("(LOWER(c.name) LIKE ? OR LOWER(c.description) LIKE ?)")
+        term = f"%{search.lower()}%"
+        params.extend([term, term])
+    if hide_inactive:
+        where.append("c.company_status = 'active'")
+    if hide_unverified:
+        where.append("c.data_tier IN (1, 2)")
+    if data_tier:
+        where.append("c.data_tier = ?")
+        params.append(data_tier)
+
+    where_clause = (" WHERE " + " AND ".join(where)) if where else ""
+
+    rows = conn.execute(f"""
+        SELECT c.name, c.website, c.athena_score, c.sector, c.geography, c.city,
+               (SELECT s.source_name FROM signals s WHERE s.company_id = c.id
+                ORDER BY s.detected_at ASC LIMIT 1) AS source,
+               (SELECT p.cohort FROM programs p WHERE p.company_id = c.id
+                ORDER BY p.detected_at DESC LIMIT 1) AS cohort_year,
+               c.data_tier
+        FROM companies c{where_clause}
+        ORDER BY c.athena_score DESC, c.name ASC
+        LIMIT 5000
+    """, params).fetchall()
+
+    conn.close()
+
+    tier_labels = {1: "Curated", 2: "Standard", 3: "Discovery"}
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["Company Name", "Website", "Athena Score", "Sector",
+                     "Geography", "City", "Source", "Cohort Year", "Tier"])
+    for r in rows:
+        writer.writerow([
+            r["name"],
+            r["website"] or "",
+            f"{r['athena_score']:.1f}" if r["athena_score"] else "",
+            r["sector"] or "",
+            r["geography"] or "",
+            r["city"] or "",
+            r["source"] or "",
+            r["cohort_year"] or "",
+            tier_labels.get(r["data_tier"], ""),
+        ])
+
+    today = date.today().isoformat()
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="athena-export-{today}.csv"'},
+    )
 
 
 @app.get("/api/stats")
