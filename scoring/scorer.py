@@ -38,11 +38,11 @@ from database.database import get_connection, update_company
 # ── Weights ──────────────────────────────────────────────────
 
 WEIGHTS_WITH_TEAM = {
-    "thesis": 0.25, "team": 0.25, "program": 0.20,
-    "traction": 0.20, "data": 0.10,
+    "thesis": 0.35, "team": 0.25, "program": 0.20,
+    "traction": 0.10, "data": 0.10,
 }
 WEIGHTS_WITHOUT_TEAM = {
-    "thesis": 0.33, "program": 0.27, "traction": 0.27, "data": 0.13,
+    "thesis": 0.47, "program": 0.27, "traction": 0.13, "data": 0.13,
 }
 
 # ── Thesis-fit keyword lists ─────────────────────────────────
@@ -127,7 +127,24 @@ TECH_TITLE_RE = re.compile(
 # ═══════════════════════════════════════════════════════════════
 
 def _score_thesis(company):
-    """Thesis Fit: binary 5 / 3 / 1 / 0.  Capped at 1.0 for late-stage."""
+    """Thesis Fit: use LLM thesis_fit_score when available, else keyword fallback."""
+    llm_score = company.get("thesis_fit_score")
+    if llm_score is not None:
+        score = float(llm_score)
+        # Still apply late-stage gate
+        stage = company.get("stage")
+        if stage in LATE_STAGES:
+            score = min(score, 1.0)
+            return score, f"LLM: {llm_score}/5 (capped — {stage})"
+        ai_core = company.get("ai_core")
+        confidence = company.get("llm_confidence") or "?"
+        core_str = "AI-core" if ai_core else "not AI-core"
+        return score, f"LLM: {llm_score}/5, {core_str}, conf={confidence}"
+    return _score_thesis_keywords(company)
+
+
+def _score_thesis_keywords(company):
+    """Thesis Fit keyword fallback: binary 5 / 3 / 1 / 0.  Capped at 1.0 for late-stage."""
     desc = (company.get("description") or "").strip()
     sector = company.get("sector") or ""
     geography = company.get("geography")
