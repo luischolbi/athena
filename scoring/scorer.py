@@ -92,17 +92,17 @@ LATE_STAGES = {"Series A", "Series B", "Series C", "Series D", "Growth", "IPO"}
 # ── Program tiers (for pedigree) ─────────────────────────────
 
 TIER_5_PROGRAMS = {
-    "Y Combinator", "Entrepreneur First", "Techstars",
+    "Y Combinator",
 }
 TIER_5_UNIVERSITIES = {
     "EPFL", "ETH AI Center",
     "University of Oxford", "Cambridge Enterprise", "Imperial Enterprise Lab",
 }
 TIER_4_PROGRAMS = {
-    "Antler", "Seedcamp", "Venture Kick",
+    "Entrepreneur First", "Antler", "Seedcamp", "Venture Kick",
 }
 TIER_3_PROGRAMS = {
-    "500 Global", "EWOR",
+    "Techstars", "500 Global", "EWOR",
     # Swedish accelerators
     "Chalmers Ventures", "Sting", "LEAD", "GU Ventures",
     "LU Innovation", "KTH Innovation",
