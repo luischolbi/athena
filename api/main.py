@@ -166,6 +166,28 @@ def _build_company_response(company_row, conn, include_breakdown=True):
         ],
     }
 
+    # Thesis detail from llm_evaluation JSON
+    llm_eval = company_row["llm_evaluation"] if "llm_evaluation" in row_keys else None
+    if llm_eval:
+        try:
+            eval_data = json.loads(llm_eval) if isinstance(llm_eval, str) else llm_eval
+            result["thesis_reasoning"] = eval_data.get("thesis_reasoning") or eval_data.get("reasoning", "")
+            result["ai_core"] = eval_data.get("is_ai_core")
+            result["platform_risk"] = eval_data.get("platform_risk")
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    # Team detail
+    result["team_reasoning"] = company_row["team_reasoning"] if "team_reasoning" in row_keys else None
+    te = company_row["team_technical_excellence"] if "team_technical_excellence" in row_keys else None
+    if te is not None:
+        result["team_metrics"] = {
+            "technical_excellence": company_row["team_technical_excellence"],
+            "builder_track_record": company_row["team_builder_track_record"],
+            "domain_expertise": company_row["team_domain_expertise"],
+            "complementarity": company_row["team_complementarity"],
+        }
+
     # Founders
     founders = conn.execute(
         "SELECT id, name, title, linkedin_url FROM founders WHERE company_id = ? ORDER BY id",

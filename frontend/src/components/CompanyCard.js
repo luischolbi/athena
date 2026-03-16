@@ -186,11 +186,11 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
 
   return (
     <div
-      onClick={() => onClick(company)}
       className="card-enter"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div
+        onClick={() => onClick(company)}
         className={`flex items-start gap-4 p-4 rounded-xl cursor-pointer border transition-all duration-200
           ${isExpanded
             ? 'bg-athena-card-hover border-athena-accent/30 shadow-[0_0_20px_rgba(59,130,246,0.06)]'
@@ -285,7 +285,8 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
 }
 
 
-function ScoreBar({ label, score, max, detail }) {
+function ScoreBar({ label, score, max, detail, tooltip }) {
+  const [expanded, setExpanded] = useState(false);
   const isNull = score == null;
   const s = isNull ? 0 : score;
   const pct = max > 0 ? (s / max) * 100 : 0;
@@ -296,10 +297,22 @@ function ScoreBar({ label, score, max, detail }) {
   else if (pct > 0) barColor = 'bg-athena-muted/40';
   else barColor = 'bg-transparent';
 
+  function handleClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    setExpanded(prev => !prev);
+  }
+
   return (
-    <div className="space-y-1">
+    <div
+      className={`space-y-1 ${tooltip ? 'cursor-pointer' : ''}`}
+      onClick={tooltip ? handleClick : (e) => e.stopPropagation()}
+    >
       <div className="flex items-center justify-between">
-        <span className="text-[12px] font-medium text-athena-text">{label}</span>
+        <span className="text-[12px] font-medium text-athena-text">
+          {label}
+          {tooltip && <span className="ml-1 text-[10px] text-athena-muted/40">{expanded ? '▾' : '▸'}</span>}
+        </span>
         <span className="font-mono text-[12px] text-athena-muted">{isNull ? '—' : `${s}/${max}`}</span>
       </div>
       <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
@@ -312,7 +325,15 @@ function ScoreBar({ label, score, max, detail }) {
           />
         )}
       </div>
-      <p className="text-[11px] text-athena-muted/50 truncate">{detail}</p>
+      {tooltip ? (
+        expanded ? (
+          <p className="text-[11px] text-athena-accent/70 leading-snug">{tooltip}</p>
+        ) : (
+          <p className="text-[11px] text-athena-muted/30 truncate">Click to see reasoning</p>
+        )
+      ) : (
+        <p className="text-[11px] text-athena-muted/50 truncate">{detail}</p>
+      )}
     </div>
   );
 }
@@ -392,6 +413,14 @@ function FounderForm({ initial, onSave, onCancel, saving }) {
 function CompanyDetail({ company }) {
   const bd = company.score_breakdown || { total: company.athena_score || 0, reasons: [], components: null };
   const components = bd.components;
+
+  const thesisTooltip = company.thesis_reasoning || null;
+
+  const teamTooltip = company.team_metrics ? (<>
+    <span className="font-mono">Tech: {company.team_metrics.technical_excellence} | Builder: {company.team_metrics.builder_track_record} | Domain: {company.team_metrics.domain_expertise} | Comp: {company.team_metrics.complementarity}</span>
+    {company.team_reasoning && <><br />{company.team_reasoning.split('.')[0]}.</>}
+  </>) : null;
+
   const [founders, setFounders] = useState(company.founders || []);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -484,8 +513,8 @@ function CompanyDetail({ company }) {
           </div>
           {components ? (
             <div className="space-y-3">
-              <ScoreBar label={`Thesis Fit (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} detail={components.thesis?.label} />
-              <ScoreBar label={`Team Signal (${Math.round((components.team?.weight || 0) * 100)}%)`} score={components.team?.score} max={components.team?.max || 5} detail={components.team?.label} />
+              <ScoreBar label={`Thesis Fit (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} detail={components.thesis?.label} tooltip={thesisTooltip} />
+              <ScoreBar label={`Team Signal (${Math.round((components.team?.weight || 0) * 100)}%)`} score={components.team?.score} max={components.team?.max || 5} detail={components.team?.label} tooltip={teamTooltip} />
               <ScoreBar label={`Program (${Math.round((components.program?.weight || 0) * 100)}%)`} score={components.program?.score ?? 0} max={components.program?.max || 5} detail={components.program?.label} />
               <ScoreBar label={`Traction (${Math.round((components.traction?.weight || 0) * 100)}%)`} score={components.traction?.score ?? 0} max={components.traction?.max || 5} detail={components.traction?.label} />
               <ScoreBar label={`Data (${Math.round((components.data?.weight || 0) * 100)}%)`} score={components.data?.score ?? 0} max={components.data?.max || 5} detail={components.data?.label} />
