@@ -4,7 +4,8 @@ import TopBar from '../components/TopBar';
 import Footer from '../components/Footer';
 import { fetchTop20, fetchStats } from '../api';
 
-function ScoreBar({ label, score, max }) {
+function ScoreBar({ label, score, max, tooltip }) {
+  const [expanded, setExpanded] = useState(false);
   const isNull = score == null;
   const s = isNull ? 0 : score;
   const pct = max > 0 ? (s / max) * 100 : 0;
@@ -16,14 +17,27 @@ function ScoreBar({ label, score, max }) {
   else barColor = 'bg-transparent';
 
   return (
-    <div className="space-y-1">
+    <div
+      className={`space-y-1 ${tooltip ? 'cursor-pointer' : ''}`}
+      onClick={tooltip ? (e) => { e.stopPropagation(); e.preventDefault(); setExpanded(prev => !prev); } : (e) => e.stopPropagation()}
+    >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium text-athena-text">{label}</span>
+        <span className="text-[11px] font-medium text-athena-text">
+          {label}
+          {tooltip && <span className="ml-1 text-[10px] text-athena-muted/40">{expanded ? '▾' : '▸'}</span>}
+        </span>
         <span className="font-mono text-[11px] text-athena-muted">{isNull ? '—' : `${s}/${max}`}</span>
       </div>
       <div className="h-1 rounded-full bg-white/5 overflow-hidden">
         <div className={`h-full rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
       </div>
+      {tooltip && (
+        expanded ? (
+          <p className="text-[11px] text-athena-accent/70 leading-snug">{tooltip}</p>
+        ) : (
+          <p className="text-[11px] text-athena-muted/30 truncate">Click to see reasoning</p>
+        )
+      )}
     </div>
   );
 }
@@ -33,6 +47,13 @@ function RankCard({ company, rank }) {
   const bd = company.score_breakdown || {};
   const components = bd.components;
   const founders = company.founders || [];
+
+  const thesisTooltip = company.thesis_reasoning || null;
+
+  const teamTooltip = company.team_metrics ? (<>
+    <span className="font-mono">Tech: {company.team_metrics.technical_excellence} | Builder: {company.team_metrics.builder_track_record} | Domain: {company.team_metrics.domain_expertise} | Comp: {company.team_metrics.complementarity}</span>
+    {company.team_reasoning && <><br />{company.team_reasoning.split('.')[0]}.</>}
+  </>) : null;
 
   const score = company.athena_score != null ? company.athena_score : 0;
   const priority = company.priority || bd.priority || 'low';
@@ -58,14 +79,13 @@ function RankCard({ company, rank }) {
       style={{ animationDelay: `${rank * 40}ms` }}
     >
       <div
-        onClick={() => setExpanded(!expanded)}
-        className={`rounded-xl border cursor-pointer transition-all duration-200
+        className={`rounded-xl border transition-all duration-200
           ${expanded
             ? 'bg-athena-card-hover border-athena-accent/30 shadow-[0_0_20px_rgba(59,130,246,0.06)]'
             : 'bg-athena-card border-athena-border hover:border-athena-border-hover hover:bg-athena-card-hover'
           }`}
       >
-        <div className="flex items-center gap-4 p-4">
+        <div className="flex items-center gap-4 p-4 cursor-pointer" onClick={() => setExpanded(!expanded)}>
           {/* Rank number */}
           <div className="flex-shrink-0 w-8 text-center">
             <span className={`font-mono font-bold text-[18px] ${
@@ -198,8 +218,8 @@ function RankCard({ company, rank }) {
                   <span className="font-mono font-bold text-[13px] text-athena-text">{score.toFixed(1)} / 5.0</span>
                 </div>
                 <div className="space-y-2.5">
-                  <ScoreBar label={`Thesis (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} />
-                  <ScoreBar label={`Team (${Math.round((components.team?.weight || 0) * 100)}%)`} score={components.team?.score} max={components.team?.max || 5} />
+                  <ScoreBar label={`Thesis (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} tooltip={thesisTooltip} />
+                  <ScoreBar label={`Team (${Math.round((components.team?.weight || 0) * 100)}%)`} score={components.team?.score} max={components.team?.max || 5} tooltip={teamTooltip} />
                   <ScoreBar label={`Program (${Math.round((components.program?.weight || 0) * 100)}%)`} score={components.program?.score ?? 0} max={components.program?.max || 5} />
                   <ScoreBar label={`Traction (${Math.round((components.traction?.weight || 0) * 100)}%)`} score={components.traction?.score ?? 0} max={components.traction?.max || 5} />
                   <ScoreBar label={`Data (${Math.round((components.data?.weight || 0) * 100)}%)`} score={components.data?.score ?? 0} max={components.data?.max || 5} />
