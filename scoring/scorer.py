@@ -140,6 +140,12 @@ def _score_thesis(company):
         confidence = company.get("llm_confidence") or "?"
         core_str = "AI-core" if ai_core else "not AI-core"
         return score, f"LLM: {llm_score}/5, {core_str}, conf={confidence}"
+    # LLM tried but couldn't score (low confidence, no score) — cap keyword fallback
+    if company.get("llm_evaluation") and company.get("llm_confidence") == "low":
+        score, label = _score_thesis_keywords(company)
+        score = min(score, 3.0)
+        return score, f"{label} (capped — LLM low-confidence)"
+
     return _score_thesis_keywords(company)
 
 
