@@ -4,15 +4,15 @@ Athena Score — Pre-screening score for deal intelligence (0–5.0).
 Tells scouts "how worth investigating is this company based on
 what we know from public data."  NOT an investment recommendation.
 
-Five components, weighted:
-  1. Thesis Fit      (25%)  — AI/deep-tech, European, early-stage
-  2. Team Signal     (25%)  — founder technical strength
-  3. Program Pedigree (20%) — accelerator / program quality
-  4. Traction Signal  (20%) — signal diversity & buzz
+Five components, weighted (with team data):
+  1. Team Signal      (35%)  — founder technical strength (LLM-scored)
+  2. Thesis Fit       (30%)  — AI/deep-tech, European, early-stage
+  3. Program Pedigree (25%)  — accelerator / program quality
+  4. Traction Signal   (0%)  — disabled (kept for structure)
   5. Data Completeness (10%) — field coverage
 
-When team data is unavailable the 25 % is redistributed
-proportionally across the other four components.
+When team data is unavailable the 35 % is redistributed
+across thesis (46%), program (38%), and data (16%).
 
 Decision thresholds:
   >= 4.0  High Priority
@@ -38,11 +38,11 @@ from database.database import get_connection, update_company
 # ── Weights ──────────────────────────────────────────────────
 
 WEIGHTS_WITH_TEAM = {
-    "thesis": 0.35, "team": 0.25, "program": 0.20,
-    "traction": 0.10, "data": 0.10,
+    "team": 0.35, "thesis": 0.30, "program": 0.25,
+    "traction": 0.00, "data": 0.10,
 }
 WEIGHTS_WITHOUT_TEAM = {
-    "thesis": 0.47, "program": 0.27, "traction": 0.13, "data": 0.13,
+    "thesis": 0.46, "program": 0.38, "data": 0.16,
 }
 
 # ── Thesis-fit keyword lists ─────────────────────────────────
