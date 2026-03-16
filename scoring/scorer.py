@@ -181,8 +181,22 @@ def _score_thesis_keywords(company):
     return 5.0, f"AI/deep-tech, {geography}, {stage}"
 
 
-def _score_team(founders):
-    """Team Signal 1–5 (or None when no data → weight redistributed)."""
+def _score_team(company, founders):
+    """Team Signal 1–5 (or None when no data → weight redistributed).
+
+    Uses LLM team_quality_score when available, otherwise falls back
+    to the simple founder-count / title heuristic.
+    """
+    # ── LLM team score (from enrich_team.py) ──
+    llm_score = company.get("team_quality_score")
+    if llm_score is not None:
+        score = float(llm_score)
+        reasoning = company.get("team_reasoning") or ""
+        # Truncate reasoning for the label (first sentence or 80 chars)
+        short = reasoning.split(".")[0][:80] if reasoning else "LLM-scored"
+        return score, f"LLM: {score}/5 — {short}"
+
+    # ── Fallback: founder-count heuristic ──
     if not founders:
         return None, "Unknown — needs research"
 
@@ -484,7 +498,7 @@ def get_score_breakdown(company_id):
     # ── Score each component ──
 
     thesis_score, thesis_label = _score_thesis(company)
-    team_score, team_label = _score_team(founders)
+    team_score, team_label = _score_team(company, founders)
     program_score, program_label = _score_program(programs, len(distinct_sources))
     traction_score, traction_label = _score_traction(signals, programs)
     data_score, data_label = _score_data(company, len(founders) > 0)
@@ -514,6 +528,11 @@ def get_score_breakdown(company_id):
     if recency_cap is not None:
         total = min(total, recency_cap)
     total = max(0.0, min(total, 5.0))
+
+    # ── No-team cap ──
+
+    if not has_team:
+        total = min(total, 3.5)
 
     # ── Cohort display ──
 
