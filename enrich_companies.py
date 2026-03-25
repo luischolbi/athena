@@ -70,7 +70,7 @@ The fund invests in AI-first and deep-tech companies at pre-seed/seed stage in E
 WHAT COUNTS AS AI-FIRST / DEEP TECH:
 - Training proprietary models, novel architectures, applied ML research
 - Domain-specific fine-tuned models with proprietary data advantages
-- Robotics, quantum computing, biotech/genomics, synthetic biology, photonics, semiconductors
+- Robotics, biotech/genomics, synthetic biology, photonics, semiconductors
 - Companies where AI/ML is the core product, not a feature
 - University spinouts with research-backed technology (PhD work, patents, publications)
 
@@ -80,6 +80,7 @@ WHAT DOES NOT COUNT (WRAPPERS):
 - Companies that "leverage AI" or are "built with AI" but have no proprietary technology
 - No-code/low-code tools with AI branding
 - If the product could exist without AI and just uses it for marketing, it's a wrapper
+- Pure quantum computing companies (quantum is not part of our investment thesis)
 
 PLATFORM RISK CHECK:
 - Could OpenAI, Google, or Anthropic ship this as a feature? If yes, high platform risk.

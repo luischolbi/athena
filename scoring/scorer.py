@@ -54,7 +54,7 @@ AI_DEEP_TECH_PATTERNS = [
     r"generative\s+AI", r"foundation\s+model",
     r"artificial\s+intelligence",
     # deep tech beyond AI
-    r"\brobotics?\b", r"\bquantum\b", r"\bbiotech\b",
+    r"\brobotics?\b", r"\bbiotech\b",
     r"\bgenomic", r"\bsynthetic\s+biology",
     r"\bnano(?:tech|material)", r"\bphotonics?\b",
     r"\bsemiconductor", r"\blidar\b", r"\bradar\b",
@@ -128,6 +128,12 @@ TECH_TITLE_RE = re.compile(
 
 def _score_thesis(company):
     """Thesis Fit: use LLM thesis_fit_score when available, else keyword fallback."""
+    # Check for manual override first
+    override = company.get("thesis_override")
+    if override is not None:
+        reason = company.get("thesis_override_reason") or "Manual override"
+        return float(override), reason
+
     llm_score = company.get("thesis_fit_score")
     if llm_score is not None:
         score = float(llm_score)

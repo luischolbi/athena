@@ -177,6 +177,15 @@ def _build_company_response(company_row, conn, include_breakdown=True):
         except (json.JSONDecodeError, TypeError):
             pass
 
+    # Thesis override
+    result["thesis_override"] = company_row["thesis_override"] if "thesis_override" in row_keys else None
+    result["thesis_override_reason"] = company_row["thesis_override_reason"] if "thesis_override_reason" in row_keys else None
+
+    if result["thesis_override"] is not None:
+        original_reasoning = result.get("thesis_reasoning", "")
+        result["thesis_reasoning_original"] = original_reasoning
+        result["thesis_reasoning"] = result["thesis_override_reason"]
+
     # Team detail
     result["team_reasoning"] = company_row["team_reasoning"] if "team_reasoning" in row_keys else None
     te = company_row["team_technical_excellence"] if "team_technical_excellence" in row_keys else None

@@ -285,7 +285,7 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
 }
 
 
-function ScoreBar({ label, score, max, detail, tooltip }) {
+function ScoreBar({ label, score, max, detail, tooltip, overridden }) {
   const [expanded, setExpanded] = useState(false);
   const isNull = score == null;
   const s = isNull ? 0 : score;
@@ -313,7 +313,10 @@ function ScoreBar({ label, score, max, detail, tooltip }) {
           {label}
           {tooltip && <span className="ml-1 text-[10px] text-athena-muted/40">{expanded ? '▾' : '▸'}</span>}
         </span>
-        <span className="font-mono text-[12px] text-athena-muted">{isNull ? '—' : `${s}/${max}`}</span>
+        <span className="font-mono text-[12px] text-athena-muted">
+          {isNull ? '—' : `${s}/${max}`}
+          {overridden && <span className="ml-1 text-[10px] text-amber-400/60">(overridden)</span>}
+        </span>
       </div>
       <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
         {isNull ? (
@@ -414,7 +417,10 @@ function CompanyDetail({ company }) {
   const bd = company.score_breakdown || { total: company.athena_score || 0, reasons: [], components: null };
   const components = bd.components;
 
-  const thesisTooltip = company.thesis_reasoning || null;
+  const thesisOverride = company.thesis_override != null;
+  const thesisTooltip = thesisOverride
+    ? `${company.thesis_reasoning || ''}${company.thesis_reasoning_original ? `\n\nOriginal LLM assessment: ${company.thesis_reasoning_original}` : ''}`
+    : company.thesis_reasoning || null;
 
   const teamTooltip = company.team_metrics ? (<>
     <span className="font-mono">Tech: {company.team_metrics.technical_excellence} | Builder: {company.team_metrics.builder_track_record} | Domain: {company.team_metrics.domain_expertise} | Comp: {company.team_metrics.complementarity}</span>
@@ -513,7 +519,7 @@ function CompanyDetail({ company }) {
           </div>
           {components ? (
             <div className="space-y-3">
-              <ScoreBar label={`Thesis Fit (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} detail={components.thesis?.label} tooltip={thesisTooltip} />
+              <ScoreBar label={`Thesis Fit (${Math.round((components.thesis?.weight || 0) * 100)}%)`} score={components.thesis?.score ?? 0} max={components.thesis?.max || 5} detail={components.thesis?.label} tooltip={thesisTooltip} overridden={thesisOverride} />
               <ScoreBar label={`Team Signal (${Math.round((components.team?.weight || 0) * 100)}%)`} score={components.team?.score} max={components.team?.max || 5} detail={components.team?.label} tooltip={teamTooltip} />
               <ScoreBar label={`Program (${Math.round((components.program?.weight || 0) * 100)}%)`} score={components.program?.score ?? 0} max={components.program?.max || 5} detail={components.program?.label} />
               <ScoreBar label={`Traction (${Math.round((components.traction?.weight || 0) * 100)}%)`} score={components.traction?.score ?? 0} max={components.traction?.max || 5} detail={components.traction?.label} />

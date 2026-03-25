@@ -123,6 +123,13 @@ def init_db():
         except sqlite3.OperationalError:
             cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
 
+    # Migration: add thesis_override columns
+    for col, coltype in [("thesis_override", "REAL"), ("thesis_override_reason", "TEXT")]:
+        try:
+            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
+        except sqlite3.OperationalError:
+            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
+
     # Backfill stage_detected_date and stage_source for existing data
     cursor.execute("""
         UPDATE companies SET
