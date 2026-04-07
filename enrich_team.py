@@ -75,12 +75,11 @@ def ensure_team_columns():
 # ── Company selection ─────────────────────────────────────────
 
 def get_candidates(limit=None):
-    """Get companies with thesis_fit >= 3 that have founders and haven't been team-enriched."""
+    """Get companies with thesis_fit >= 3 that haven't been team-enriched."""
     conn = get_connection()
     query = """
-        SELECT DISTINCT c.id, c.name, c.website, c.sector, c.description
+        SELECT c.id, c.name, c.website, c.sector, c.description
         FROM companies c
-        JOIN founders f ON f.company_id = c.id
         WHERE c.thesis_fit_score >= 3
           AND c.team_enriched_at IS NULL
         ORDER BY c.thesis_fit_score DESC, c.athena_score DESC
@@ -90,7 +89,7 @@ def get_candidates(limit=None):
     rows = conn.execute(query).fetchall()
     companies = [dict(r) for r in rows]
 
-    # Attach founders to each company
+    # Attach founders to each company (may be empty)
     for c in companies:
         founders = conn.execute(
             "SELECT name, title FROM founders WHERE company_id = ?",
@@ -199,7 +198,10 @@ def submit_group_runs(taskgroup_id, companies, api_key):
         batch = companies[batch_start:batch_start + PARALLEL_GROUP_BATCH_SIZE]
         inputs = []
         for c in batch:
-            prompt = build_parallel_prompt(c)
+            if c["founders"]:
+                prompt = build_parallel_prompt(c)
+            else:
+                prompt = build_parallel_prompt_no_founders(c)
             inputs.append({"input": prompt, "processor": PARALLEL_PROCESSOR})
 
         resp = requests.post(
@@ -456,18 +458,31 @@ def run_team_enrichment(limit=None, dry_run=False):
     # Ensure columns exist
     ensure_team_columns()
 
-    # Get candidates
+    # Get candidates (thesis_fit >= 3 only)
     companies = get_candidates(limit)
     total = len(companies)
+
+    # Log how many were skipped due to low thesis fit
+    conn = get_connection()
+    skipped_low_thesis = conn.execute(
+        "SELECT COUNT(*) FROM companies WHERE thesis_fit_score < 3 AND team_enriched_at IS NULL"
+    ).fetchone()[0]
+    conn.close()
+    if skipped_low_thesis:
+        print(f"  Skipping {skipped_low_thesis} companies with thesis_fit < 3 (no LLM calls wasted)")
+
     print(f"  Found {total} companies to process")
 
     if dry_run:
         print("\n  DRY RUN — no API calls\n")
+        no_founders_count = 0
         for i, c in enumerate(companies, 1):
-            founders = ", ".join(f["name"] for f in c["founders"])
+            founders = ", ".join(f["name"] for f in c["founders"]) if c["founders"] else "(none — will discover)"
+            if not c["founders"]:
+                no_founders_count += 1
             print(f"  [{i}/{total}] {c['name']} (id={c['id']})")
             print(f"    Founders: {founders}")
-        print(f"\n  Would process {total} companies")
+        print(f"\n  Would process {total} companies ({no_founders_count} without founders)")
         return
 
     if total == 0:
@@ -515,11 +530,24 @@ def run_team_enrichment(limit=None, dry_run=False):
     print(f"\n  Phase 3: Fetching results and scoring with Claude...")
     ok = 0
     failed = 0
+    founders_discovered = 0
+    founders_inserted = 0
 
     for i, (run_id, company) in enumerate(run_to_company.items(), 1):
         cid = company["id"]
         name = company["name"]
-        founders_str = ", ".join(f["name"] for f in company["founders"])
+        had_founders = bool(company["founders"])
+
+        # Runtime guard: skip if thesis_fit dropped below 3 since candidate selection
+        conn_check = get_connection()
+        thesis_row = conn_check.execute(
+            "SELECT thesis_fit_score FROM companies WHERE id = ?", (cid,)
+        ).fetchone()
+        conn_check.close()
+        if thesis_row and (thesis_row["thesis_fit_score"] or 0) < 3:
+            print(f"  [{i}/{total}] Skipping team enrichment for {name}: thesis_fit={thesis_row['thesis_fit_score']} < 3")
+            failed += 1
+            continue
 
         try:
             # Fetch Parallel AI result
@@ -532,6 +560,15 @@ def run_team_enrichment(limit=None, dry_run=False):
                 failed += 1
                 continue
 
+            # Extract founders for companies that didn't have any
+            if not had_founders:
+                time.sleep(CLAUDE_RATE_DELAY)
+                extracted = extract_founders_with_claude(name, research_text, claude_client)
+                if extracted:
+                    n_ins = insert_founders(cid, extracted)
+                    founders_discovered += len(extracted)
+                    founders_inserted += n_ins
+
             # Score with Claude
             time.sleep(CLAUDE_RATE_DELAY)
             scores = score_team_with_claude(name, research_text, claude_client)
@@ -542,9 +579,11 @@ def run_team_enrichment(limit=None, dry_run=False):
                 bt = scores.get("builder_track_record", "?")
                 de = scores.get("domain_expertise", "?")
                 tc = scores.get("team_complementarity", "?")
-                reasoning = scores.get("team_reasoning", "")
+                suffix = ""
+                if not had_founders and extracted:
+                    suffix = f" [+{len(extracted)} founders discovered]"
                 print(f"  [{i}/{total}] {name} — {tq}/5 "
-                      f"(T:{te} B:{bt} D:{de} C:{tc})")
+                      f"(T:{te} B:{bt} D:{de} C:{tc}){suffix}")
             else:
                 print(f"  [{i}/{total}] {name} — Claude scoring failed")
 
@@ -568,13 +607,16 @@ def run_team_enrichment(limit=None, dry_run=False):
     print("=" * 64)
     print("  TEAM ENRICHMENT COMPLETE")
     print("=" * 64)
-    print(f"  Processed:         {ok + failed}")
-    print(f"  Successful:        {ok}")
-    print(f"  Failed:            {failed}")
-    print(f"  Parallel AI phase: {parallel_elapsed:.1f} minutes")
-    print(f"  Total time:        {elapsed:.1f} minutes")
+    print(f"  Processed:            {ok + failed}")
+    print(f"  Successful:           {ok}")
+    print(f"  Failed:               {failed}")
+    if founders_discovered:
+        print(f"  Founders discovered:  {founders_discovered}")
+        print(f"  Founders inserted:    {founders_inserted}")
+    print(f"  Parallel AI phase:    {parallel_elapsed:.1f} minutes")
+    print(f"  Total time:           {elapsed:.1f} minutes")
     if elapsed > 0:
-        print(f"  Rate:              {(ok + failed) / elapsed:.0f} companies/min")
+        print(f"  Rate:                 {(ok + failed) / elapsed:.0f} companies/min")
 
 
 def run_no_founders_enrichment(limit=None, dry_run=False):
@@ -600,6 +642,17 @@ def run_no_founders_enrichment(limit=None, dry_run=False):
 
     companies = get_no_founder_candidates(limit)
     total = len(companies)
+
+    # Log how many were skipped due to low thesis fit
+    conn = get_connection()
+    skipped_low_thesis = conn.execute(
+        "SELECT COUNT(*) FROM companies WHERE thesis_fit_score < 3 AND team_enriched_at IS NULL"
+        " AND id NOT IN (SELECT DISTINCT company_id FROM founders)"
+    ).fetchone()[0]
+    conn.close()
+    if skipped_low_thesis:
+        print(f"  Skipping {skipped_low_thesis} companies with thesis_fit < 3 (no LLM calls wasted)")
+
     print(f"  Found {total} companies without founders to process")
 
     if dry_run:
@@ -681,6 +734,17 @@ def run_no_founders_enrichment(limit=None, dry_run=False):
     for i, (run_id, company) in enumerate(run_to_company.items(), 1):
         cid = company["id"]
         name = company["name"]
+
+        # Runtime guard: skip if thesis_fit dropped below 3 since candidate selection
+        conn_check = get_connection()
+        thesis_row = conn_check.execute(
+            "SELECT thesis_fit_score FROM companies WHERE id = ?", (cid,)
+        ).fetchone()
+        conn_check.close()
+        if thesis_row and (thesis_row["thesis_fit_score"] or 0) < 3:
+            print(f"  [{i}/{total}] Skipping team enrichment for {name}: thesis_fit={thesis_row['thesis_fit_score']} < 3")
+            failed += 1
+            continue
 
         try:
             # Fetch Parallel AI result

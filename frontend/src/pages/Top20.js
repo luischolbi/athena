@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Footer from '../components/Footer';
-import { fetchTop20, fetchStats } from '../api';
+import { fetchTop20, fetchStats, addToPipeline, quickScreen } from '../api';
+import { showToast } from '../components/Toast';
 
 function ScoreBar({ label, score, max, tooltip, overridden }) {
   const [expanded, setExpanded] = useState(false);
@@ -50,6 +51,40 @@ function RankCard({ company, rank }) {
   const bd = company.score_breakdown || {};
   const components = bd.components;
   const founders = company.founders || [];
+  const [pipelineStatus, setPipelineStatus] = useState(company.in_pipeline || null);
+  const [pipelineAdding, setPipelineAdding] = useState(false);
+  const [quickScreenSent, setQuickScreenSent] = useState(false);
+  const [quickScreenSending, setQuickScreenSending] = useState(false);
+
+  async function handleAddToPipeline(e) {
+    e.stopPropagation();
+    setPipelineAdding(true);
+    try {
+      await addToPipeline(company.id);
+      setPipelineStatus('new');
+      showToast('Added to pipeline');
+    } catch (err) {
+      if (err.response?.status === 409) setPipelineStatus('existing');
+      console.error('Failed to add to pipeline:', err);
+    } finally {
+      setPipelineAdding(false);
+    }
+  }
+
+  async function handleQuickScreen(e) {
+    e.stopPropagation();
+    if (!company.website || quickScreenSent || quickScreenSending) return;
+    setQuickScreenSending(true);
+    try {
+      await quickScreen(company.website, company.name);
+      setQuickScreenSent(true);
+      showToast('Sent to Quick Screen');
+    } catch (err) {
+      console.error('Failed to send to Quick Screen:', err);
+    } finally {
+      setQuickScreenSending(false);
+    }
+  }
 
   const thesisOverride = company.thesis_override != null;
   const thesisTooltip = thesisOverride
@@ -112,11 +147,6 @@ function RankCard({ company, rank }) {
               <h3 className="font-sans font-semibold text-athena-text text-[15px] truncate">
                 {company.name}
               </h3>
-              {company.data_tier === 1 && (
-                <span className="px-1.5 py-0 rounded text-[9px] font-mono text-emerald-400/80 border border-emerald-500/20">
-                  Curated
-                </span>
-              )}
               {priority === 'high' && (
                 <span className="px-1.5 py-0 rounded text-[9px] font-mono text-emerald-400/80 border border-emerald-500/20">High Priority</span>
               )}
@@ -144,9 +174,20 @@ function RankCard({ company, rank }) {
               {company.geography && (
                 <span className="text-athena-muted/60">{company.geography}</span>
               )}
-              {company.stage && (
-                <span className="font-mono text-athena-muted/50">{company.stage}</span>
-              )}
+              {company.stage && (() => {
+                const stageStyles = {
+                  'Pre-money':  'border-athena-muted/30 text-athena-muted',
+                  'Grant only': 'border-blue-500/30 text-blue-400',
+                  'Pre-seed':   'border-emerald-500/30 text-emerald-400',
+                  'Seed':       'border-green-500/30 text-green-400',
+                  'Series A':   'border-purple-500/30 text-purple-400',
+                  'Unknown':    'border-dashed border-athena-muted/20 text-athena-muted/50',
+                };
+                const cls = stageStyles[company.stage] || stageStyles['Unknown'];
+                return (
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${cls}`}>{company.stage}</span>
+                );
+              })()}
             </div>
           </div>
 
@@ -214,6 +255,37 @@ function RankCard({ company, rank }) {
               </span>
             </div>
           )}
+
+          {/* Add to Pipeline + Quick Screen buttons */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {pipelineStatus ? (
+              <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-emerald-400/80 bg-emerald-500/10 border border-emerald-500/20">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                In Pipeline
+              </span>
+            ) : (
+              <button
+                onClick={handleAddToPipeline}
+                disabled={pipelineAdding}
+                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-athena-accent bg-athena-accent/10 border border-athena-accent/30 hover:bg-athena-accent/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                {pipelineAdding ? 'Adding...' : 'Add to Pipeline'}
+              </button>
+            )}
+            <button
+              onClick={handleQuickScreen}
+              disabled={!company.website || quickScreenSent || quickScreenSending}
+              title={!company.website ? 'No website available' : undefined}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {quickScreenSent ? 'Sent ✓' : (quickScreenSending ? 'Sending...' : 'Quick Screen ↗')}
+            </button>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             {/* Score breakdown */}
@@ -319,7 +391,11 @@ export default function Top20() {
     fetchStats().then(setStats).catch(() => {});
     fetchTop20()
       .then((data) => {
-        setCompanies(data.results || []);
+        const results = (data.results || []).filter(c => {
+          const thesisScore = c.score_breakdown?.components?.thesis?.score;
+          return thesisScore != null && thesisScore >= 3;
+        });
+        setCompanies(results);
       })
       .catch(() => setError('Could not load data'))
       .finally(() => setLoading(false));

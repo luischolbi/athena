@@ -546,6 +546,14 @@ def get_score_breakdown(company_id):
     if not has_team:
         total = min(total, 3.5)
 
+    # ── Thesis-fit hard gate ──
+    # Companies with thesis_fit < 3 should never reach investigate/high priority
+
+    thesis_capped = False
+    if thesis_score < 3 and total > 2.5:
+        total = 2.5
+        thesis_capped = True
+
     # ── Cohort display ──
 
     cohort_display = _compute_cohort_display(programs)
@@ -599,6 +607,8 @@ def get_score_breakdown(company_id):
     reasons.append(f"Data: {data_label} ({data_score}/5)")
     if recency_adj != 0:
         reasons.append(f"Recency: {'+' if recency_adj > 0 else ''}{recency_adj} ({recency_label})")
+    if thesis_capped:
+        reasons.append("Capped: below thesis threshold")
 
     return {
         "total": total,

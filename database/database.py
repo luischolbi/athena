@@ -103,6 +103,31 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pipeline (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL UNIQUE,
+            status TEXT NOT NULL DEFAULT 'new',
+            added_by TEXT DEFAULT 'scout',
+            added_at TEXT NOT NULL,
+            moved_at TEXT,
+            position INTEGER DEFAULT 0,
+            FOREIGN KEY (company_id) REFERENCES companies(id)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pipeline_notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL,
+            author TEXT NOT NULL DEFAULT 'scout',
+            author_role TEXT NOT NULL DEFAULT 'scout',
+            content TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (company_id) REFERENCES companies(id)
+        )
+    """)
+
     # Migration: add previous_heat_score if missing (existing DBs)
     try:
         cursor.execute("SELECT previous_heat_score FROM companies LIMIT 1")
@@ -129,6 +154,27 @@ def init_db():
             cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
         except sqlite3.OperationalError:
             cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
+
+    # Migration: add newness tracking columns
+    for col, coltype in [
+        ("ssl_first_seen", "TEXT"),
+        ("newness_status", "TEXT"),
+        ("newness_checked_at", "TEXT"),
+    ]:
+        try:
+            cursor.execute(f"SELECT {col} FROM companies LIMIT 1")
+        except sqlite3.OperationalError:
+            cursor.execute(f"ALTER TABLE companies ADD COLUMN {col} {coltype}")
+
+    # Migration: create scrape_snapshots table for future snapshot diffing
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS scrape_snapshots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source_name TEXT NOT NULL,
+            snapshot_date TEXT NOT NULL,
+            company_names TEXT NOT NULL
+        )
+    """)
 
     # Backfill stage_detected_date and stage_source for existing data
     cursor.execute("""

@@ -18,3 +18,10 @@ frontend/build/
 .DS_Store
 Thumbs.db
 athena.db.backup
+athena.db.backup*
+athena.db.pre*
+athena-export-*.csv
+cloudflared
+cloudflared.tgz
+data/
+eval/

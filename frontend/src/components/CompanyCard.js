@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { createFounder, updateFounder, deleteFounder } from '../api';
+import { createFounder, updateFounder, deleteFounder, addToPipeline, quickScreen } from '../api';
+import { showToast } from './Toast';
 
 function ScoreBadge({ score, isCrossLayer, priority }) {
   const s = score != null ? score : 0;
@@ -207,7 +208,6 @@ export default function CompanyCard({ company, isExpanded, onClick, delay }) {
           <h3 className="font-sans font-semibold text-athena-text text-[15px] truncate flex items-center gap-1.5">
             {company.name}
             <PriorityBadge priority={company.priority} />
-            <TierBadge tier={company.data_tier} />
             {company.cohort ? (
               <span className="inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono text-violet-400/80 border border-violet-500/20 leading-relaxed">
                 {company.cohort}
@@ -431,6 +431,42 @@ function CompanyDetail({ company }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [pipelineStatus, setPipelineStatus] = useState(company.in_pipeline || null);
+  const [pipelineAdding, setPipelineAdding] = useState(false);
+  const [quickScreenSent, setQuickScreenSent] = useState(false);
+  const [quickScreenSending, setQuickScreenSending] = useState(false);
+
+  async function handleAddToPipeline(e) {
+    e.stopPropagation();
+    setPipelineAdding(true);
+    try {
+      await addToPipeline(company.id);
+      setPipelineStatus('new');
+      showToast('Added to pipeline');
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setPipelineStatus('existing');
+      }
+      console.error('Failed to add to pipeline:', err);
+    } finally {
+      setPipelineAdding(false);
+    }
+  }
+
+  async function handleQuickScreen(e) {
+    e.stopPropagation();
+    if (!company.website || quickScreenSent || quickScreenSending) return;
+    setQuickScreenSending(true);
+    try {
+      await quickScreen(company.website, company.name);
+      setQuickScreenSent(true);
+      showToast('Sent to Quick Screen');
+    } catch (err) {
+      console.error('Failed to send to Quick Screen:', err);
+    } finally {
+      setQuickScreenSending(false);
+    }
+  }
 
   async function handleAddFounder(data) {
     setSaving(true);
@@ -507,6 +543,37 @@ function CompanyDetail({ company }) {
           <WebsiteStatus status={company.company_status} />
         </div>
       )}
+
+      {/* Add to Pipeline + Quick Screen buttons */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {pipelineStatus ? (
+          <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-emerald-400/80 bg-emerald-500/10 border border-emerald-500/20">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            In Pipeline
+          </span>
+        ) : (
+          <button
+            onClick={handleAddToPipeline}
+            disabled={pipelineAdding}
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-athena-accent bg-athena-accent/10 border border-athena-accent/30 hover:bg-athena-accent/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            {pipelineAdding ? 'Adding...' : 'Add to Pipeline'}
+          </button>
+        )}
+        <button
+          onClick={handleQuickScreen}
+          disabled={!company.website || quickScreenSent || quickScreenSending}
+          title={!company.website ? 'No website available' : undefined}
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          {quickScreenSent ? 'Sent ✓' : (quickScreenSending ? 'Sending...' : 'Quick Screen ↗')}
+        </button>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* Score breakdown */}

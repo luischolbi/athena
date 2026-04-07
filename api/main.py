@@ -14,6 +14,8 @@ from typing import Optional
 import csv
 import io
 
+import requests
+
 from fastapi import FastAPI, HTTPException, Query, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -211,6 +213,10 @@ def _build_company_response(company_row, conn, include_breakdown=True):
         }
         for f in founders
     ]
+
+    # Pipeline status
+    pipeline_row = conn.execute("SELECT status FROM pipeline WHERE company_id = ?", (cid,)).fetchone()
+    result["in_pipeline"] = pipeline_row["status"] if pipeline_row else None
 
     if include_breakdown:
         breakdown = get_score_breakdown(cid)
@@ -602,6 +608,65 @@ def delete_founder(founder_id: int):
     return {"ok": True}
 
 
+@app.get("/api/new")
+def new_companies(
+    status: Optional[str] = Query(None, description="Filter by newness_status: 'new' or 'recent'"),
+    include_recent: Optional[bool] = Query(None, description="Include both 'new' and 'recent'"),
+    limit: int = Query(200, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+):
+    """Return companies classified as 'new' or 'recent' by SSL certificate age."""
+    conn = get_connection()
+
+    where = []
+    params = []
+
+    if include_recent:
+        where.append("c.newness_status IN ('new', 'recent')")
+    elif status in ("new", "recent"):
+        where.append("c.newness_status = ?")
+        params.append(status)
+    else:
+        where.append("c.newness_status = 'new'")
+
+    where_clause = " WHERE " + " AND ".join(where)
+
+    total = conn.execute(
+        f"SELECT COUNT(*) FROM companies c{where_clause}", params
+    ).fetchone()[0]
+
+    rows = conn.execute(
+        f"SELECT * FROM companies c{where_clause} ORDER BY c.athena_score DESC, c.name ASC LIMIT ? OFFSET ?",
+        params + [limit, offset],
+    ).fetchall()
+
+    results = []
+    for row in rows:
+        r = _build_company_response(row, conn)
+        r["ssl_first_seen"] = row["ssl_first_seen"] if "ssl_first_seen" in row.keys() else None
+        r["newness_status"] = row["newness_status"] if "newness_status" in row.keys() else None
+        results.append(r)
+
+    # Also fetch counts for both tabs
+    new_count = conn.execute(
+        "SELECT COUNT(*) FROM companies WHERE newness_status = 'new'"
+    ).fetchone()[0]
+    recent_count = conn.execute(
+        "SELECT COUNT(*) FROM companies WHERE newness_status = 'recent'"
+    ).fetchone()[0]
+
+    conn.close()
+
+    return {
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "new_count": new_count,
+        "recent_count": recent_count,
+        "results": results,
+    }
+
+
 @app.get("/api/top20")
 def top20():
     """Return the top 20 highest-scoring companies with 2025/2026 cohort."""
@@ -686,6 +751,202 @@ def filters():
     }
 
 
+# ── Pipeline endpoints ──
+
+class PipelineAdd(BaseModel):
+    company_id: int
+    added_by: str = "scout"
+
+class PipelineMove(BaseModel):
+    company_id: int
+    status: str
+    position: int = 0
+
+class PipelineNote(BaseModel):
+    company_id: int
+    author: str = "scout"
+    author_role: str = "scout"
+    content: str
+
+
+@app.get("/api/pipeline")
+def get_pipeline():
+    conn = get_connection()
+    # Select pipeline rows first, then fetch full company data per row
+    # to avoid column name collisions between pipeline.id and companies.id
+    pipeline_rows = conn.execute("""
+        SELECT company_id, status, added_by, added_at, moved_at, position
+        FROM pipeline
+        ORDER BY status, position
+    """).fetchall()
+
+    results = []
+    for p_row in pipeline_rows:
+        company_row = conn.execute(
+            "SELECT * FROM companies WHERE id = ?", (p_row["company_id"],)
+        ).fetchone()
+        if not company_row:
+            continue
+
+        company_data = _build_company_response(company_row, conn, include_breakdown=True)
+        company_data["pipeline_status"] = p_row["status"]
+        company_data["pipeline_added_by"] = p_row["added_by"]
+        company_data["pipeline_added_at"] = p_row["added_at"]
+        company_data["pipeline_moved_at"] = p_row["moved_at"]
+        company_data["pipeline_position"] = p_row["position"]
+
+        notes = conn.execute(
+            "SELECT * FROM pipeline_notes WHERE company_id = ? ORDER BY created_at DESC",
+            (p_row["company_id"],)
+        ).fetchall()
+        company_data["pipeline_notes"] = [
+            {"id": n["id"], "author": n["author"], "author_role": n["author_role"],
+             "content": n["content"], "created_at": n["created_at"]}
+            for n in notes
+        ]
+        results.append(company_data)
+
+    conn.close()
+    return {"results": results}
+
+
+@app.post("/api/pipeline/add")
+def add_to_pipeline(body: PipelineAdd):
+    conn = get_connection()
+    company = conn.execute("SELECT id, name FROM companies WHERE id = ?", (body.company_id,)).fetchone()
+    if not company:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Company not found")
+    existing = conn.execute("SELECT id FROM pipeline WHERE company_id = ?", (body.company_id,)).fetchone()
+    if existing:
+        conn.close()
+        raise HTTPException(status_code=409, detail="Company already in pipeline")
+
+    now = datetime.now().isoformat()
+    max_pos = conn.execute("SELECT COALESCE(MAX(position), -1) FROM pipeline WHERE status = 'new'").fetchone()[0]
+    conn.execute(
+        "INSERT INTO pipeline (company_id, status, added_by, added_at, moved_at, position) VALUES (?, 'new', ?, ?, ?, ?)",
+        (body.company_id, body.added_by, now, now, max_pos + 1)
+    )
+    conn.commit()
+    conn.close()
+    return {"ok": True, "company_name": company["name"]}
+
+
+@app.put("/api/pipeline/move")
+def move_in_pipeline(body: PipelineMove):
+    valid_statuses = {'new', 'reviewing', 'shortlisted', 'submitted', 'passed'}
+    if body.status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    conn = get_connection()
+    existing = conn.execute("SELECT id, status FROM pipeline WHERE company_id = ?", (body.company_id,)).fetchone()
+    if not existing:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Company not in pipeline")
+
+    old_status = existing["status"]
+
+    # Update card's status
+    conn.execute(
+        "UPDATE pipeline SET status = ?, moved_at = ? WHERE company_id = ?",
+        (body.status, datetime.now().isoformat(), body.company_id)
+    )
+
+    # Re-index destination column: collect all cards, insert moved card at target position
+    dest_rows = conn.execute(
+        "SELECT company_id FROM pipeline WHERE status = ? ORDER BY position",
+        (body.status,)
+    ).fetchall()
+    dest_ids = [r["company_id"] for r in dest_rows if r["company_id"] != body.company_id]
+    target_pos = min(body.position, len(dest_ids))
+    dest_ids.insert(target_pos, body.company_id)
+    for idx, cid in enumerate(dest_ids):
+        conn.execute("UPDATE pipeline SET position = ? WHERE company_id = ?", (idx, cid))
+
+    # Re-index source column if card moved between columns
+    if old_status != body.status:
+        src_rows = conn.execute(
+            "SELECT company_id FROM pipeline WHERE status = ? ORDER BY position",
+            (old_status,)
+        ).fetchall()
+        for idx, r in enumerate(src_rows):
+            conn.execute("UPDATE pipeline SET position = ? WHERE company_id = ?", (idx, r["company_id"]))
+
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@app.post("/api/pipeline/note")
+def add_pipeline_note(body: PipelineNote):
+    conn = get_connection()
+    existing = conn.execute("SELECT id FROM pipeline WHERE company_id = ?", (body.company_id,)).fetchone()
+    if not existing:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Company not in pipeline")
+    conn.execute(
+        "INSERT INTO pipeline_notes (company_id, author, author_role, content, created_at) VALUES (?, ?, ?, ?, ?)",
+        (body.company_id, body.author, body.author_role, body.content, datetime.now().isoformat())
+    )
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@app.delete("/api/pipeline/{company_id}")
+def remove_from_pipeline(company_id: int):
+    conn = get_connection()
+    conn.execute("DELETE FROM pipeline_notes WHERE company_id = ?", (company_id,))
+    conn.execute("DELETE FROM pipeline WHERE company_id = ?", (company_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+# ── Quick Screen proxy ──
+
+QUICK_SCREEN_FORM_URL = (
+    "https://ellipsisventure.app.n8n.cloud/form/0f4e9b71-102b-49a0-9eb0-02d0252c541b"
+)
+
+
+class QuickScreenRequest(BaseModel):
+    website: str
+    company_name: Optional[str] = None
+
+
+@app.post("/api/quick-screen")
+def quick_screen(body: QuickScreenRequest):
+    """Forward a company to the Ellipsis Quick Screen n8n form (CORS-safe proxy)."""
+    website = (body.website or "").strip()
+    if not website:
+        raise HTTPException(status_code=400, detail="website is required")
+
+    name = (body.company_name or "").strip()
+    deal_text = f"{name} — {website}" if name else website
+
+    # n8n form trigger expects multipart/form-data
+    try:
+        resp = requests.post(
+            QUICK_SCREEN_FORM_URL,
+            files={
+                "field-0": (None, deal_text),
+                "field-1": (None, "Athena"),
+            },
+            timeout=15,
+        )
+    except requests.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Quick Screen forward failed: {e}")
+
+    if resp.status_code >= 400:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Quick Screen returned HTTP {resp.status_code}",
+        )
+
+    return {"ok": True, "status": resp.status_code}
+
+
 # ── Serve React frontend build ──
 
 FRONTEND_BUILD = os.path.join(
@@ -700,6 +961,9 @@ if os.path.isdir(FRONTEND_BUILD):
     @app.get("/{full_path:path}")
     async def serve_frontend(request: Request, full_path: str):
         """Serve React app for any non-API route (SPA client-side routing)."""
+        # Never intercept API routes
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="Not found")
         # Try to serve the exact file first (favicon.ico, manifest.json, etc.)
         file_path = os.path.join(FRONTEND_BUILD, full_path)
         if full_path and os.path.isfile(file_path):

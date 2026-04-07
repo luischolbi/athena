@@ -46,6 +46,18 @@ export async function fetchTop20() {
   return data;
 }
 
+export async function fetchNewCompanies(params = {}) {
+  const query = {};
+  if (params.status) query.status = params.status;
+  if (params.include_recent) query.include_recent = true;
+  if (params.limit) query.limit = params.limit;
+  if (params.offset) query.offset = params.offset;
+  console.log('[fetchNewCompanies] request params:', JSON.stringify(query));
+  const { data } = await api.get('/api/new', { params: query });
+  console.log('[fetchNewCompanies] response:', { total: data.total, new_count: data.new_count, recent_count: data.recent_count, resultCount: data.results?.length });
+  return data;
+}
+
 export async function createFounder(companyId, founder) {
   const { data } = await api.post(`/api/companies/${companyId}/founders`, founder);
   return data;
@@ -58,5 +70,35 @@ export async function updateFounder(founderId, updates) {
 
 export async function deleteFounder(founderId) {
   const { data } = await api.delete(`/api/founders/${founderId}`);
+  return data;
+}
+
+export async function fetchPipeline() {
+  const { data } = await api.get('/api/pipeline');
+  return data;
+}
+
+export async function addToPipeline(companyId, addedBy = 'scout') {
+  const { data } = await api.post('/api/pipeline/add', { company_id: companyId, added_by: addedBy });
+  return data;
+}
+
+export async function moveInPipeline(companyId, status, position = 0) {
+  const { data } = await api.put('/api/pipeline/move', { company_id: companyId, status, position });
+  return data;
+}
+
+export async function addPipelineNote(companyId, content, author = 'scout', authorRole = 'scout') {
+  const { data } = await api.post('/api/pipeline/note', { company_id: companyId, author, author_role: authorRole, content });
+  return data;
+}
+
+export async function removeFromPipeline(companyId) {
+  const { data } = await api.delete(`/api/pipeline/${companyId}`);
+  return data;
+}
+
+export async function quickScreen(website, companyName) {
+  const { data } = await api.post('/api/quick-screen', { website, company_name: companyName });
   return data;
 }

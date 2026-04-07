@@ -248,13 +248,21 @@ def _merge_companies(keep, remove):
         values = list(updates.values()) + [keep["id"]]
         conn.execute(f"UPDATE companies SET {set_clause} WHERE id = ?", values)
 
-    # Move signals and programs to the keeper
+    # Move signals, programs, and founders to the keeper
     conn.execute(
         "UPDATE signals SET company_id = ? WHERE company_id = ?",
         (keep["id"], remove["id"]),
     )
     conn.execute(
         "UPDATE programs SET company_id = ? WHERE company_id = ?",
+        (keep["id"], remove["id"]),
+    )
+    conn.execute(
+        "DELETE FROM founders WHERE company_id = ? AND name IN (SELECT name FROM founders WHERE company_id = ?)",
+        (remove["id"], keep["id"]),
+    )
+    conn.execute(
+        "UPDATE founders SET company_id = ? WHERE company_id = ?",
         (keep["id"], remove["id"]),
     )
 

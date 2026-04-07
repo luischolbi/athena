@@ -4,6 +4,8 @@ export default function TopBar({ stats }) {
   const location = useLocation();
   const isTop20 = location.pathname === '/top20';
   const isDashboard = location.pathname === '/';
+  const isNew = location.pathname === '/new';
+  const isPipeline = location.pathname === '/pipeline';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-athena-bg/95 backdrop-blur-md border-b border-athena-border h-14">
@@ -37,6 +39,26 @@ export default function TopBar({ stats }) {
               }`}
             >
               Top 20
+            </Link>
+            <Link
+              to="/new"
+              className={`px-3 py-1 rounded-md text-[12px] font-sans no-underline transition-colors ${
+                isNew
+                  ? 'text-athena-accent bg-athena-accent/10'
+                  : 'text-athena-muted hover:text-athena-text'
+              }`}
+            >
+              New
+            </Link>
+            <Link
+              to="/pipeline"
+              className={`px-3 py-1 rounded-md text-[12px] font-sans no-underline transition-colors ${
+                isPipeline
+                  ? 'text-athena-accent bg-athena-accent/10'
+                  : 'text-athena-muted hover:text-athena-text'
+              }`}
+            >
+              Pipeline
             </Link>
           </div>
         </div>
