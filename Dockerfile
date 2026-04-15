@@ -18,13 +18,11 @@ RUN cd frontend && npm install
 COPY frontend/ frontend/
 RUN cd frontend && npm run build
 
-# Copy backend code and database
+# Copy backend code
 COPY api/ api/
 COPY database/ database/
 COPY scoring/ scoring/
 COPY scrapers/ scrapers/
-# DB updated: 2026-03-25
-COPY athena.db .
 
 EXPOSE 8000
 
